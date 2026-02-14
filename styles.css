@@ -1,0 +1,1470 @@
+:root{
+  --bg0: #0b1020;
+  --bg1: #0c1631;
+  --card: rgba(255,255,255,0.06);
+  --card2: rgba(255,255,255,0.085);
+  --stroke: rgba(255,255,255,0.12);
+  --text: rgba(255,255,255,0.94);
+  --muted: rgba(255,255,255,0.74);
+
+  --primary: #7dd3fc;
+  --primary2: #a78bfa;
+  --good: #34d399;
+  --bad: #fb7185;
+  --warn: #fbbf24;
+
+  --shadow: 0 20px 60px rgba(0,0,0,0.45);
+  --radius: 22px;
+  --ring: 113.097; /* 2*pi*r with r=18 */
+  --baseFont: 17px;
+}
+
+[data-theme="light"]{
+  --bg0: #f7fafc;
+  --bg1: #edf2ff;
+  --card: rgba(10,10,30,0.04);
+  --card2: rgba(10,10,30,0.06);
+  --stroke: rgba(10,10,30,0.12);
+  --text: rgba(10,10,30,0.92);
+  --muted: rgba(10,10,30,0.70);
+  --shadow: 0 20px 60px rgba(10,10,30,0.18);
+}
+
+*{ box-sizing: border-box; }
+html, body{ height: 100%; }
+body{
+  margin:0;
+  font-family: system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+  font-size: var(--baseFont);
+  color: var(--text);
+  background: radial-gradient(1200px 800px at 20% 10%, var(--bg1), var(--bg0));
+  overflow-x: hidden;
+}
+
+html, body{
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+  background: #0b1020; /* צבע בסיס מתחת לגרדיאנט */
+}
+
+/* iPhone Safe Area (Notch / Dynamic Island) */
+body{
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+
+.bg{
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  overflow: visible;
+}
+.blob{
+  position: absolute;
+  width: 520px; height: 520px;
+  filter: blur(60px);
+  opacity: .45;
+  border-radius: 999px;
+  transform: translate3d(0,0,0);
+}
+.b1{ right:-220px; top:-220px; background: radial-gradient(circle at 30% 30%, var(--primary), transparent 60%); }
+.b2{ left:-260px; top: 35%; background: radial-gradient(circle at 30% 30%, var(--primary2), transparent 60%); }
+.b3{ right: 15%; bottom:-280px; background: radial-gradient(circle at 30% 30%, var(--good), transparent 60%); opacity:.22; }
+
+.topbar{
+  display:flex;
+  align-items:center;
+  justify-content: space-between;
+  padding: 18px 22px;
+  gap: 12px;
+}
+
+.brand{
+  display:flex;
+  align-items:center;
+  gap: 12px;
+}
+.logo{
+  width: 46px; height: 46px;
+  display:grid; place-items:center;
+  border-radius: 14px;
+  background: linear-gradient(135deg, var(--card2), rgba(255,255,255,0.02));
+  border: 1px solid var(--stroke);
+  box-shadow: var(--shadow);
+}
+.title{ font-weight: 900; letter-spacing: .2px; font-size: 30px; }
+.subtitle{ font-size: 20px; color: var(--muted); margin-top: 2px; }
+
+.topActions{ display:flex; gap:10px; }
+
+.container{
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 10px 18px 40px;
+}
+
+.card{
+  background: linear-gradient(135deg, var(--card2), var(--card));
+  border: 1px solid var(--stroke);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 24px;
+  backdrop-filter: blur(10px);
+}
+
+.screen{ margin-top: 10px; }
+.hidden{ display:none !important; }
+
+.h1{
+  margin: 0 0 6px;
+  font-size: 30px;
+}
+.muted{ color: var(--muted); }
+
+.grid2{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-top: 14px;
+}
+@media (max-width: 820px){
+  .grid2{ grid-template-columns: 1fr; }
+  .topbar{ flex-direction: column; align-items: stretch; }
+  .topActions{ justify-content: flex-end; }
+}
+
+.field{ display:flex; flex-direction: column; gap: 6px; }
+label{ font-size: 14px; color: var(--muted); }
+.hint{ font-size: 12.8px; color: var(--muted); opacity:.95; }
+
+.input{
+  background: rgba(255,255,255,0.06);
+  border: 1px solid var(--stroke);
+  color: var(--text);
+  padding: 13px 12px;
+  border-radius: 14px;
+  outline: none;
+  font-size: 16px;
+}
+.input:focus{
+  border-color: rgba(125,211,252,0.60);
+  box-shadow: 0 0 0 4px rgba(125,211,252,0.15);
+}
+
+/* Fix dropdown list visibility (Windows/Chrome sometimes renders white on white) */
+select.input option{
+  color: #111 !important;
+  background: #fff !important;
+}
+
+.actions{
+  display:flex;
+  gap: 10px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+
+.btn{
+  border: 1px solid var(--stroke);
+  background: rgba(255,255,255,0.06);
+  color: var(--text);
+  padding: 12px 15px;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: transform .08s ease, background .15s ease, border-color .15s ease;
+  user-select: none;
+  font-size: 15.5px;
+}
+.btn:hover{ transform: translateY(-1px); background: rgba(255,255,255,0.09); }
+.btn:active{ transform: translateY(0px); }
+
+.btn.primary{
+  border-color: rgba(125,211,252,0.35);
+  background: linear-gradient(135deg, rgba(125,211,252,0.20), rgba(167,139,250,0.15));
+}
+.btn.primary:hover{
+  background: linear-gradient(135deg, rgba(125,211,252,0.26), rgba(167,139,250,0.20));
+}
+.btn.ghost{ background: transparent; }
+.btn.danger{ border-color: rgba(251,113,133,0.40); }
+.btn.danger:hover{ background: rgba(251,113,133,0.12); }
+
+.chips{
+  display:flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 6px;
+}
+.chip{
+  display:flex;
+  align-items:center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--stroke);
+  background: rgba(255,255,255,0.06);
+  cursor: pointer;
+  transition: background .15s ease, border-color .15s ease;
+  user-select: none;
+}
+.chip input{ accent-color: #7dd3fc; }
+.chip:hover{ background: rgba(255,255,255,0.09); }
+.chip.active{
+  border-color: rgba(125,211,252,0.48);
+  background: rgba(125,211,252,0.12);
+}
+
+.gameTop{
+  display:flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.stat{
+  min-width: 128px;
+  padding: 11px 12px;
+  border-radius: 16px;
+  border: 1px solid var(--stroke);
+  background: rgba(255,255,255,0.05);
+}
+.statLabel{ font-size: 12.8px; color: var(--muted); }
+.statValue{ font-size: 19px; font-weight: 900; margin-top: 4px; }
+
+.timer{
+  display:flex;
+  align-items:center;
+  gap: 12px;
+  padding: 11px 12px;
+  border-radius: 16px;
+  border: 1px solid var(--stroke);
+  background: rgba(255,255,255,0.05);
+}
+.timerLabel{ font-size: 12.8px; color: var(--muted); }
+.timerRing{
+  position: relative;
+  width: 56px; height: 56px;
+  display:grid;
+  place-items:center;
+}
+.timerValue{
+  position:absolute;
+  font-size: 16.5px;
+  font-weight: 900;
+}
+.ring{ width: 56px; height: 56px; transform: rotate(-90deg); }
+.ringBg{
+  fill: none;
+  stroke: rgba(255,255,255,0.12);
+  stroke-width: 6;
+}
+.ringFg{
+  fill: none;
+  stroke: rgba(125,211,252,0.85);
+  stroke-width: 6;
+  stroke-linecap: round;
+  stroke-dasharray: var(--ring);
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset .35s linear;
+}
+
+.metaRow{
+  margin-top: 14px;
+  display:flex;
+  align-items: center;
+  justify-content: space-between; /* זה מה שדוחף: pills ימינה, יציאה שמאלה */
+  gap: 10px;
+}
+
+.metaPills{
+  display:flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.pill{
+  border: 1px solid var(--stroke);
+  background: rgba(255,255,255,0.06);
+  padding: 9px 11px;
+  border-radius: 999px;
+  font-size: 13px;
+  color: var(--text);
+}
+.pill.ghost{ color: var(--muted); }
+
+.lifelines{
+  margin-top: 12px;
+  display:flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.btn.life{
+  border-color: rgba(255,255,255,0.16);
+}
+.lifeCount{
+  margin-right: 10px;
+  display:inline-grid;
+  place-items:center;
+  min-width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  border: 1px solid var(--stroke);
+  background: rgba(255,255,255,0.05);
+  color: var(--muted);
+  font-weight: 900;
+  padding: 0 7px;
+}
+.btn.life[disabled]{
+  opacity: .55;
+  cursor: not-allowed;
+}
+
+.question{
+  margin: 22px 0 18px;
+font-size: 22px;
+  line-height: 1.45;
+  font-weight: 850;
+}
+
+.answers{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 12px;
+}
+@media (max-width: 720px){
+  .answers{ grid-template-columns: 1fr; }
+}
+.answerBtn{
+  text-align: right;
+  padding: 15px 14px;
+  border-radius: 16px;
+  border: 1px solid var(--stroke);
+  background: rgba(255,255,255,0.06);
+  cursor: pointer;
+  transition: transform .08s ease, background .15s ease, border-color .15s ease;
+  min-height: 60px;
+  display:flex;
+  align-items:center;
+  justify-content: space-between;
+  gap: 10px;
+  color: var(--text);
+  font-size: 16.2px;
+}
+.answerBtn span{ color: var(--text); }
+.answerBtn:hover{ transform: translateY(-1px); background: rgba(255,255,255,0.09); }
+.answerBtn:active{ transform: translateY(0px); }
+.answerBtn[disabled]{ opacity: .7; cursor: not-allowed; }
+.badge{
+  font-size: 12px;
+  opacity: .92;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--stroke);
+  background: rgba(255,255,255,0.05);
+  color: var(--muted);
+}
+
+.answerBtn.correct{
+  border-color: rgba(52,211,153,0.50);
+  background: rgba(52,211,153,0.14);
+}
+.answerBtn.wrong{
+  border-color: rgba(251,113,133,0.50);
+  background: rgba(251,113,133,0.12);
+}
+
+.feedback{
+  margin-top: 16px;
+  padding: 16px;
+  border-radius: 18px;
+  border: 1px solid var(--stroke);
+  background: rgba(255,255,255,0.05);
+}
+.feedbackHeader{
+  display:flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.feedbackTitle{
+  font-weight: 950;
+  font-size: 20px;
+}
+.feedbackPoints{
+  font-weight: 950;
+  color: var(--primary);
+}
+.explanation{
+  margin-top: 10px;
+  color: var(--muted);
+  line-height: 1.7;
+  font-size: 15.5px;
+}
+.feedbackActions{
+  margin-top: 14px;
+  display:flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.resultGrid{
+  display:grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px;
+  margin-top: 14px;
+}
+@media (max-width: 820px){
+  .resultGrid{ grid-template-columns: 1fr; }
+}
+.resultCard{
+  padding: 14px;
+  border-radius: 18px;
+  border: 1px solid var(--stroke);
+  background: rgba(255,255,255,0.05);
+}
+.resultLabel{ color: var(--muted); font-size: 12.8px; }
+.resultValue{ font-size: 28px; font-weight: 950; margin-top: 4px; }
+
+.analysisBox{
+  margin-top: 14px;
+  padding: 14px;
+  border-radius: 18px;
+  border: 1px solid var(--stroke);
+  background: rgba(255,255,255,0.05);
+}
+.analysisTop{
+  display:flex;
+  justify-content: space-between;
+  align-items:center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 540px){
+  .analysisBox .muted{
+    margin-top: 12px;
+    display: block;
+  }
+}
+
+
+.analysisTitle{ font-weight: 950; }
+
+.analysisList{
+  margin-top: 12px;
+  display:flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.mistake{
+  border: 1px solid var(--stroke);
+  background: rgba(255,255,255,0.05);
+  border-radius: 16px;
+  padding: 12px;
+}
+.mistakeTop{
+  display:flex;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items:center;
+}
+.mistakeQ{
+  font-weight: 900;
+  line-height: 1.45;
+}
+.mistakeMeta{
+  color: var(--muted);
+  font-size: 12.8px;
+}
+.mistakeBody{
+  margin-top: 8px;
+  color: var(--muted);
+  line-height: 1.7;
+  font-size: 15px;
+}
+.mistakeBody b{ color: var(--text); }
+
+.footer{
+  padding: 16px 20px 30px;
+  text-align:center;
+}
+
+.modal{
+  border: 1px solid var(--stroke);
+  border-radius: 18px;
+  background: radial-gradient(800px 480px at 30% 10%, rgba(125,211,252,0.10), rgba(0,0,0,0.0));
+  background-color: rgba(15,20,35,0.92);
+  color: var(--text);
+  box-shadow: var(--shadow);
+  max-width: 820px;
+  width: calc(100% - 24px);
+}
+[data-theme="light"] .modal{ background-color: rgba(250,252,255,0.92); }
+.modal::backdrop{
+  background: rgba(0,0,0,0.55);
+  backdrop-filter: blur(2px);
+}
+.modalBody{ padding: 16px 16px 14px; }
+.modalHeader{
+  display:flex;
+  justify-content: space-between;
+  align-items:center;
+  gap: 10px;
+}
+.modalTitle{ font-size: 18.5px; font-weight: 950; }
+.modalFooter{
+  display:flex;
+  justify-content: flex-end;
+  margin-top: 12px;
+}
+.row{ display:flex; gap: 10px; align-items:center; }
+
+.bullets{
+  margin: 12px 0 0;
+  padding: 0 16px 0 0;
+  color: var(--muted);
+  line-height: 1.9;
+}
+
+.tableWrap{
+  margin-top: 12px;
+  overflow:auto;
+  border: 1px solid var(--stroke);
+  border-radius: 16px;
+}
+.table{
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+.table th, .table td{
+  padding: 10px 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.10);
+  text-align: right;
+  white-space: nowrap;
+}
+.table th{
+  color: var(--muted);
+  background: rgba(255,255,255,0.05);
+}
+
+@keyframes shake {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(4px); }
+  50% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+  100% { transform: translateX(0); }
+}
+.shake{ animation: shake .22s linear; }
+
+
+/* --- Lifelines bottom + assist panel --- */
+.lifelinesBottom{
+  margin-top: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.assistPanel{
+  margin-top: 12px;
+  padding: 14px 14px;
+  border-radius: 18px;
+  border: 1px solid rgba(255,255,255,.10);
+  background: rgba(255,255,255,.06);
+  box-shadow: 0 10px 30px rgba(0,0,0,.25);
+  transform-origin: 50% 100%;
+}
+
+.assistPanel.animateIn{
+  animation: assistIn 260ms ease-out;
+}
+
+@keyframes assistIn{
+  from{ transform: translateY(10px); opacity: 0; }
+  to{ transform: translateY(0); opacity: 1; }
+}
+
+.assistTitle{
+  font-weight: 950;
+  font-size: 18px;
+  margin-bottom: 8px;
+}
+
+.assistText{
+  font-size: 16.5px;
+  line-height: 1.5;
+  color: rgba(255,255,255,.92);
+}
+
+.poll{
+  display: grid;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.pollRow{
+  display: grid;
+  grid-template-columns: 52px 1fr 56px;
+  align-items: center;
+  gap: 10px;
+}
+
+.pollLbl{
+  font-weight: 900;
+  opacity: .95;
+}
+
+.pollBar{
+  height: 12px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.10);
+  overflow: hidden;
+}
+
+.pollFill{
+  height: 100%;
+  width: 0%;
+  background: rgba(125,211,252,0.85);
+  transition: width 700ms ease;
+}
+
+.pollPct{
+  text-align: left;
+  font-variant-numeric: tabular-nums;
+  opacity: .9;
+}
+
+
+
+#screenHome .actions{justify-content:center;}
+
+#app-scale {
+  transform: scale(1.0);
+  transform-origin: top center;
+    margin-top: 80px;
+
+}
+
+.topbar {
+  display: flex;
+  justify-content: center; /* מרכז אופקית */
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brandText {
+  text-align: center; /* מרכז את הטקסט */
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  overflow-y: hidden; /* אין יותר גלילה למטה */
+}
+
+
+/* ------------------------------------------------------------
+   Mobile / Responsive fixes (no JS needed)
+   - Keeps desktop look
+   - Makes UI usable on phones (scroll, padding, font sizes)
+   ------------------------------------------------------------ */
+
+:root{
+  /* Slightly smaller base font on small screens */
+  --baseFont: 16px;
+}
+
+/* Prevent iOS "100vh" issues */
+body{
+  min-height: 100dvh;
+}
+
+/* If you used #app-scale for layout tweaks, keep it but make it mobile-friendly */
+#app-scale{
+  width: 100%;
+}
+
+/* Tablets & smaller */
+@media (max-width: 900px){
+  #app-scale{
+    margin-top: 24px;           /* was 80px -> wastes space on small screens */
+    transform: none !important; /* avoid weird zoom/scaling on mobile */
+  }
+  .container{
+    padding: 10px 14px 26px;
+  }
+  .card{
+    padding: 18px;
+  }
+  .subtitle{
+    text-align: center;
+  }
+}
+
+/* Phones */
+@media (max-width: 540px){
+  /* On mobile we MUST allow vertical scroll */
+  html, body{
+    height: auto;
+  }
+  body{
+    overflow-y: auto !important;      /* override the desktop "no scroll" rule */
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .topbar{
+    padding: 14px 14px;
+    gap: 10px;
+  }
+  .logo{
+    width: 42px;
+    height: 42px;
+    border-radius: 14px;
+  }
+  .title{
+    font-size: 25px;
+  }
+  .subtitle{
+    font-size: 12.5px;
+    line-height: 1.35;
+  }
+
+  #app-scale{
+    margin-top: 12px;
+  }
+  .container{
+    padding: 8px 12px 22px;
+  }
+  .card{
+    padding: 16px;
+    border-radius: 20px;
+  }
+  .h1{
+    font-size: 24px;
+  }
+  .question{
+    font-size: 18px;
+    margin: 16px 0 12px;
+  }
+  .answerBtn{
+    min-height: 52px;
+    padding: 13px 12px;
+    font-size: 15.5px;
+    border-radius: 16px;
+  }
+  .badge{
+    padding: 5px 9px;
+  }
+
+  /* Chips: more compact and wrap nicely */
+  .chips{
+    gap: 8px;
+  }
+  .chip{
+    padding: 7px 10px;
+    font-size: 13px;
+  }
+
+  /* Stats row: fit narrow screens */
+  .gameTop{
+    gap: 10px;
+  }
+  .stat{
+    min-width: 0;
+  }
+}
+
+/* Very short screens (landscape phones) */
+@media (max-height: 700px){
+  #app-scale{ margin-top: 10px; }
+  .topbar{ padding-top: 10px; padding-bottom: 10px; }
+}
+
+
+@media (max-width: 768px) {
+  .topActions {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 540px){
+
+  .brand {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .brandText{
+    width: 100%;
+    text-align: center;
+  }
+
+  .subtitle{
+    text-align: center;
+  }
+
+}
+
+/* ===== Mobile: feedback as bottom-sheet (no page scroll needed) ===== */
+@media (max-width: 540px){
+  /* תן למסך המשחק מרווח כדי שה-bottom sheet לא יכסה כפתורים */
+  #screenGame{
+    padding-bottom: calc(16px + 220px); /* מרווח “בטוח” */
+  }
+
+  /* הפוך את ה-feedback לחלון צף בתחתית */
+  #feedback{
+    position: fixed;
+    left: 12px;
+    right: 12px;
+    bottom: calc(12px + env(safe-area-inset-bottom));
+    z-index: 9999;
+
+    /* מראה */
+    border-radius: 18px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.55);
+
+    /* גובה חכם + גלילה פנימית להסבר */
+    max-height: 45dvh;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* שהכפתור "הבא" יישאר תמיד נגיש */
+  #feedback .feedbackActions{
+    position: sticky;
+    bottom: 0;
+    background: rgba(10,10,30,0.35);
+    backdrop-filter: blur(8px);
+    padding-top: 10px;
+  }
+}
+
+@media (max-width: 540px){
+
+  /* שורת קטגוריה/קושי/מצב + יציאה */
+  .metaRow{
+    gap: 8px;
+    flex-wrap: nowrap;          /* לא לשבור שורה */
+    align-items: center;
+  }
+
+  .pill{
+    font-size: 11.5px;          /* קטן יותר בנייד */
+    padding: 7px 9px;           /* קטן יותר */
+    white-space: nowrap;        /* שלא ירד שורה */
+  }
+
+  /* במיוחד לקטגוריה שיכולה להיות ארוכה (Active Directory וכו') */
+  #pillCategory{
+    max-width: 52vw;            /* תתאים לפי הטעם */
+    overflow: hidden;
+    text-overflow: ellipsis;    /* ... במקום לשבור שורה */
+  }
+
+  /* כפתור יציאה – שלא “יתנפח” */
+  #btnQuitTop{
+    flex: 0 0 auto;
+    font-size: 11.5px;
+    padding: 7px 10px;
+    white-space: nowrap;
+  }
+}
+
+/* למנוע גלילה אופקית והופעת "פס" */
+#feedback, #explanation{
+  overflow-x: hidden;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+/* אם עדיין רואים פס גלילה – להסתיר אותו */
+#feedback{
+  scrollbar-width: none;              /* Firefox */
+}
+#feedback::-webkit-scrollbar{
+  width: 0;
+  height: 0;                          /* Chrome/Safari */
+}
+/* מובייל: dialog נפתח למטה ולא באמצע */
+/* מובייל: dlgAnalysis צמוד למעלה (לא באמצע ולא למטה) */
+@media (max-width: 540px){
+  dialog#dlgAnalysis[open]{
+    position: fixed !important;
+
+    /* מבטל centering ברירת מחדל של <dialog> */
+    inset: auto !important;
+    margin: 0 !important;
+
+    left: 12px !important;
+    right: 12px !important;
+
+    top: 10vh !important;
+    bottom: auto !important;
+
+    max-width: none !important;
+    width: auto !important;
+
+    max-height: 82dvh !important;  /* שיישאר מקום לגלילה */
+    overflow: auto !important;
+    -webkit-overflow-scrolling: touch;
+
+    transform: none !important;
+  }
+}
+
+
+
+/* --- Force feedback to appear under lifelines (same place as assistPanel) --- */
+@media (max-width: 540px){
+  #screenGame{
+    padding-bottom: 90px !important; /* לא צריך "מרווח בטוח" אם לא bottom-sheet */
+  }
+
+  #feedback{
+    position: static !important;
+    left: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    z-index: auto !important;
+
+    max-height: none !important;
+    overflow: visible !important;
+    box-shadow: 0 10px 30px rgba(0,0,0,.25) !important;
+    margin-top: 12px !important;
+  }
+
+  #feedback .feedbackActions{
+    position: static !important;
+    background: transparent !important;
+    backdrop-filter: none !important;
+    padding-top: 0 !important;
+  }
+}
+
+
+/* Fixed layout: reserve space for feedback so UI doesn't jump */
+#feedback{
+  display: flex;
+  flex-direction: column;
+  min-height: 150px;   /* תכוון: 130-220 לפי הטעם */
+}
+
+/* explanation sticks to top and can scroll inside */
+#feedback #explanation{
+  margin-top: 10px;
+  flex: 1;
+  overflow: auto;
+}
+
+/* IMPORTANT: keep space even when hidden (only for #feedback) */
+#feedback.hidden{
+  display: flex !important;     /* במקום display:none */
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Desktop layout only */
+@media (min-width: 821px){
+
+  .gameTop{
+    display: flex;
+    justify-content: center;   /* מרכז הכל באמצע */
+    align-items: center;
+    gap: 12px;                 /* רווח קטן ואחיד */
+  }
+
+  .stat{
+    min-width: auto;           /* מבטל רוחב כפוי */
+    padding: 10px 14px;
+  }
+
+  .timer{
+    min-width: auto;
+    padding: 10px 14px;
+  }
+
+}
+
+/* Desktop only: center the category/difficulty/mode pills */
+@media (min-width: 821px){
+  .metaRow{
+    position: relative;
+  }
+
+  .metaPills{
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    justify-content: center;
+  }
+}
+
+/* Desktop layout fix */
+@media (min-width: 821px){
+
+  .metaRow{
+    display: flex;
+    align-items: center;
+  }
+
+  /* ה-pills תמיד באמצע */
+  .metaPills{
+    margin: 0 auto;   /* זה הטריק */
+  }
+
+  /* כפתור יציאה תמיד בצד שמאל */
+  #btnQuitTop{
+    margin-right: auto;  /* ב-RTL זה דוחף לשמאל */
+  }
+
+}
+
+/* Desktop scroll fix כאשר assistPanel + feedback פתוחים */
+@media (min-width: 821px){
+
+  html, body{
+    overflow-y: auto;
+  }
+
+}
+
+
+
+/* ------------------------------
+   LEVELS + XP UI
+------------------------------ */
+.levelStat{ min-width: 170px; }
+.xpBar{
+  margin-top: 8px;
+  height: 10px;
+  border-radius: 999px;
+  border: 1px solid var(--stroke);
+  background: rgba(255,255,255,0.06);
+  overflow: hidden;
+}
+.xpFill{
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, rgba(125,211,252,0.85), rgba(167,139,250,0.75));
+  border-radius: 999px;
+  transition: width .35s ease;
+}
+.xpText{
+  margin-top: 6px;
+  font-size: 12.5px;
+  color: var(--muted);
+  font-weight: 800;
+}
+
+/* ------------------------------
+   PER-QUESTION BEST TIME (left of ring)
+------------------------------ */
+.bestTimer{
+  min-width: 120px;
+  padding: 10px 10px;
+  border-radius: 14px;
+  border: 1px solid var(--stroke);
+  background: rgba(255,255,255,0.05);
+  line-height: 1.1;
+}
+.bestLabel{ font-size: 12.2px; color: var(--muted); font-weight: 900; }
+.bestValue{ margin-top: 4px; font-size: 17px; font-weight: 950; }
+.bestSub{ margin-top: 6px; font-size: 12px; color: var(--muted); }
+
+/* make timer box feel premium */
+.timer{
+  gap: 10px;
+}
+@media (max-width: 520px){
+  .bestTimer{ min-width: 100%; }
+  .timer{ width: 100%; justify-content: space-between; }
+}
+
+/* ------------------------------
+   XP / SCORE POP ANIMATION
+------------------------------ */
+.popFx{
+  position: fixed;
+  z-index: 9999;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  padding: 10px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--stroke);
+  background: linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02));
+  box-shadow: 0 20px 60px rgba(0,0,0,0.30);
+  font-weight: 950;
+  letter-spacing: .2px;
+  animation: popFloat 900ms ease forwards;
+}
+.popFx.good{ color: rgba(52,211,153,0.95); }
+.popFx.bad{ color: rgba(251,113,133,0.95); }
+.popFx.xp{ color: rgba(125,211,252,0.98); }
+@keyframes popFloat{
+  0%{ opacity: 0; transform: translate(-50%,-50%) scale(.92); filter: blur(1px); }
+  15%{ opacity: 1; transform: translate(-50%,-58%) scale(1.02); filter: blur(0px); }
+  100%{ opacity: 0; transform: translate(-50%,-120%) scale(1.05); }
+}
+
+/* glow on level up */
+.levelUpGlow{
+  animation: glowPulse 1100ms ease forwards;
+}
+@keyframes glowPulse{
+  0%{ box-shadow: var(--shadow); }
+  25%{ box-shadow: 0 0 0 6px rgba(125,211,252,0.18), 0 0 0 12px rgba(167,139,250,0.12); }
+  100%{ box-shadow: var(--shadow); }
+}
+
+/* ------------------------------
+   ACHIEVEMENTS
+------------------------------ */
+.achList{ display: grid; gap: 10px; }
+.achItem{
+  padding: 12px;
+  border-radius: 16px;
+  border: 1px solid var(--stroke);
+  background: rgba(255,255,255,0.05);
+}
+.achTop{
+  display:flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+.achTitle{ font-weight: 950; }
+.achBadge{
+  font-size: 12px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--stroke);
+  background: rgba(255,255,255,0.06);
+  color: var(--muted);
+  white-space: nowrap;
+}
+.achDesc{ margin-top: 6px; color: var(--muted); font-size: 13.5px; line-height: 1.55; }
+.achBar{
+  margin-top: 10px;
+  height: 10px;
+  border-radius: 999px;
+  border: 1px solid var(--stroke);
+  background: rgba(255,255,255,0.06);
+  overflow: hidden;
+}
+.achFill{
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, rgba(52,211,153,0.85), rgba(125,211,252,0.78));
+  transition: width .35s ease;
+}
+.achUnlocked{
+  border-color: rgba(52,211,153,0.40);
+  background: rgba(52,211,153,0.08);
+}
+.achUnlocked .achBadge{
+  color: rgba(52,211,153,0.95);
+  border-color: rgba(52,211,153,0.35);
+  background: rgba(52,211,153,0.10);
+}
+
+/* ------------------------------
+   TOASTS
+------------------------------ */
+.toastStack{
+  position: fixed;
+  left: 14px;
+  bottom: 14px;
+  z-index: 99999;
+  display: grid;
+  gap: 10px;
+  width: min(420px, calc(100vw - 28px));
+  pointer-events: none;
+}
+.toast{
+  pointer-events: none;
+  padding: 12px 14px;
+  border-radius: 18px;
+  border: 1px solid var(--stroke);
+  background: linear-gradient(135deg, rgba(255,255,255,0.09), rgba(255,255,255,0.03));
+  box-shadow: 0 20px 60px rgba(0,0,0,0.28);
+}
+.toastTitle{ font-weight: 950; }
+.toastBody{ margin-top: 4px; color: var(--muted); font-size: 13.5px; line-height: 1.55; }
+.toast.good .toastTitle{ color: rgba(52,211,153,0.96); }
+.toast.bad .toastTitle{ color: rgba(251,113,133,0.96); }
+.toast.xp  .toastTitle{ color: rgba(125,211,252,0.98); }
+
+
+
+/* ===== Fix: put XP/Score toasts INSIDE the feedback card (under the explanation) ===== */
+#feedback .toastStack{
+  position: static;
+  left: auto;
+  right: auto;
+  bottom: auto;
+  z-index: auto;
+  width: 100%;
+  margin-top: 10px;
+  pointer-events: none;
+}
+
+/* Center toasts a bit inside the feedback box */
+#feedback .toast{
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+/* ===== Responsive: keep feedback in the normal flow on mobile (no fixed bottom-sheet) ===== */
+@media (max-width: 540px){
+  #screenGame{
+    padding-bottom: 16px !important;
+  }
+  #feedback{
+    position: static !important;
+    left: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    z-index: auto !important;
+
+    max-height: none !important;
+    overflow: visible !important;
+    -webkit-overflow-scrolling: auto !important;
+  }
+
+  /* make top stats wrap nicely */
+  .gameTop{
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+    .timer{
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+
+/* If toastStack is ever outside feedback, keep it non-intrusive */
+.toastStack{
+  position: static;
+}
+
+
+/* ==============================
+   MOBILE FIX PACK (v4)
+   - stabilize GameTop layout
+   - timer (best + ring) behaves on narrow widths
+   ============================== */
+@media (max-width: 540px){
+
+  /* game top cards: 2 per row, level+timer full width */
+  .gameTop{
+    display:flex;
+    flex-wrap:wrap;
+    justify-content: space-between;
+    gap: 10px;
+  }
+  .gameTop .stat{
+    flex: 1 1 calc(50% - 10px);
+    min-width: 0;
+  }
+  .gameTop .levelStat{
+    flex: 1 1 100%;
+  }
+
+  /* timer row becomes its own full-width block */
+  .gameTop .timer{
+    flex: 1 1 100%;
+    width: 100%;
+    justify-content: stretch;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .gameTop .timerLabel{
+    flex: 0 0 100%;
+    text-align: right;
+    font-weight: 900;
+    opacity: .9;
+  }
+
+  /* best-time box + ring: single row, no overflow */
+  .gameTop .bestTimer{
+    flex: 1 1 auto;
+    min-width: 0 !important;
+    width: auto !important;
+  }
+  .gameTop .timerRing{
+    flex: 0 0 auto;
+    margin-inline-start: 6px;
+  }
+
+  /* tighten paddings so nothing spills */
+  .gameTop .stat,
+  .gameTop .timer{
+    padding: 10px 10px;
+    border-radius: 16px;
+  }
+
+  /* keep question/answers readable */
+  .answersGrid{
+    grid-template-columns: 1fr;
+  }
+}
+
+
+
+/* =========================================
+   📱 MOBILE TOP BAR: Row1 (Q/Score/Combo) + Row2 (Level/Timer 50/50)
+   - Row1: 3 stats in one line
+   - Row2: Level 50% + Timer 50%
+   - Timer content: ring on the LEFT of bestTimer (horizontal)
+========================================= */
+@media (max-width: 600px){
+
+  /* Override the desktop flex layout */
+  .gameTop{
+    display: grid !important;
+    grid-template-columns: repeat(6, 1fr) !important; /* 6 cols => 2+2+2 then 3+3 */
+    gap: 8px !important;
+    align-items: stretch !important;
+  }
+
+  /* Make cards fluid so they don't force wrapping */
+  .gameTop .stat,
+  .gameTop .timer{
+    min-width: 0 !important;
+    width: auto !important;
+  }
+
+  /* ---- Row 1: 3 stats (each spans 2/6) ---- */
+  .gameTop .stat:not(.levelStat){
+    grid-row: 1 !important;
+    grid-column: span 2 !important;
+    padding: 10px 10px !important;
+  }
+
+  /* ---- Row 2: Level (3/6) + Timer (3/6) ---- */
+  .gameTop .stat.levelStat{
+    grid-row: 2 !important;
+    grid-column: 1 / span 3 !important; /* 50% */
+    padding: 10px 10px !important;
+    min-height: 74px;
+  }
+
+  .gameTop .timer{
+    grid-row: 2 !important;
+    grid-column: 4 / span 3 !important; /* 50% */
+    padding: 10px 10px !important;
+    min-height: 74px;
+
+    /* internal layout */
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 10px !important;
+  }
+
+  /* Reduce typography so it doesn't feel huge */
+  .statLabel, .timerLabel{ font-size: 12px !important; }
+  .statValue{ font-size: 17px !important; }
+
+  /* Compact Level XP bar/text */
+  .levelStat .xpBar{ height: 8px !important; margin-top: 6px !important; }
+  .levelStat .xpText{ font-size: 11.5px !important; margin-top: 5px !important; }
+
+  /* ---- Timer: ring LEFT of bestTimer ---- */
+  .timerLabel{ display:none !important; } /* saves space on mobile */
+
+  .timerRing{ 
+    order: 1 !important; 
+    flex: 0 0 auto !important;
+  }
+
+  .bestTimer{
+    order: 2 !important;
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+    padding: 8px 8px !important;
+  }
+
+  .bestLabel{ font-size: 11.5px !important; }
+  .bestValue{ font-size: 14px !important; }
+  .bestSub{ font-size: 11.5px !important; }
+
+  .timerCircle, .ring{
+    width: 54px !important;
+    height: 54px !important;
+  }
+  .timerValue{ font-size: 14px !important; }
+
+  /* Answers a bit more compact */
+  .answers{ gap: 10px !important; }
+  .answer{ padding: 12px !important; font-size: 15px !important; }
+
+  /* Question text not gigantic */
+  #questionText, .questionText, .question{
+    font-size: 18px !important;
+    line-height: 1.35 !important;
+  }
+}
+
+/* ===================================== */
+/* ALWAYS SIDE-BY-SIDE: bestTimer + ring */
+/* ===================================== */
+
+@media (max-width: 600px){
+
+  /* הקונטיינר של הזמן (אצלך זה .timer) */
+  .timer{
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+
+    flex-wrap: nowrap !important;     /* <-- זה התיקון המרכזי */
+    gap: 10px !important;
+  }
+
+  /* הטקסט של השיא */
+  .timer .bestTimer{
+    flex: 1 1 auto !important;        /* שיתפוס מקום ויצטמצם כשצריך */
+    min-width: 0 !important;          /* מאפשר כיווץ אמיתי */
+    width: auto !important;           /* מבטל 100% אם היה */
+  }
+
+  /* העיגול/ה-SVG */
+  .timer svg,
+  .timer .timerCircle{
+    flex: 0 0 56px !important;        /* גודל קבוע */
+    width: 56px !important;
+    height: 56px !important;
+  }
+
+  /* מונע שבירה של שורות בתוך ה-bestTimer */
+  .timer .bestLabel,
+  .timer .bestValue,
+  .timer .bestSub{
+    white-space: nowrap !important;
+  }
+}
+

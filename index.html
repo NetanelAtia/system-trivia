@@ -1,0 +1,321 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#2F4858" />
+  <title>System Trivia — טריוויה סיסטם</title>
+  <link rel="stylesheet" href="styles.css" />
+  <meta name="color-scheme" content="dark light" />
+  <!-- Favicon רגיל -->
+<link rel="icon" type="image/png" href="logo.png">
+
+<!-- אנדרואיד / PWA -->
+<link rel="icon" sizes="192x192" href="logo.png">
+<link rel="icon" sizes="512x512" href="logo.png">
+
+<!-- אייפון -->
+<link rel="apple-touch-icon" href="logo.png">
+
+</head>
+<body>
+<div id="app-scale">
+  <div class="bg">
+    <div class="blob b1"></div>
+    <div class="blob b2"></div>
+    <div class="blob b3"></div>
+  </div>
+
+  <header class="topbar">
+    <div class="brand">
+      <div class="brandText">
+        <div class="title">System Trivia</div>
+        <div class="subtitle">טריוויה מקצועית על AD • GPO • DHCP • DNS • RAID • ועוד</div>
+      </div>
+    </div>
+
+    <div class="topActions">
+      <button id="btnTheme" class="btn ghost" type="button" title="מצב תצוגה">🌓</button>
+      <button id="btnAch" class="btn ghost" type="button" title="השגים">🏆</button>
+      <button id="btnHow" class="btn ghost" type="button" title="איך משחקים?">❔</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- SCREEN: HOME -->
+    <section id="screenHome" class="card screen">
+      <h1 class="h1">ברוך הבא 👋</h1>
+      <p class="muted">
+        בחר מצב משחק, קטגוריות ורמת קושי. תענה מהר, תצבור קומבו, ותלמד מההסברים אחרי כל שאלה.
+      </p>
+
+      <div class="grid2">
+        <div class="field">
+          <label for="playerName">שם שחקן (עברית/אנגלית)</label>
+          <input id="playerName" class="input" type="text" placeholder="נתנאל / Netanel" maxlength="18" autocomplete="off" />
+          <div class="hint">מותר עברית ואנגלית. באנגלית האות הראשונה תהפוך אוטומטית ל־Capital.</div>
+        </div>
+
+        <div class="field">
+          <label for="mode">מצב</label>
+          <select id="mode" class="input">
+            <option value="test" selected>מבחן (עם טיימר + פסילה)</option>
+            <option value="practice">תרגול (בלי פסילה)</option>
+          </select>
+          <div class="hint">במבחן: נגמר הזמן = טעות. בתרגול: ממשיכים.</div>
+        </div>
+
+        <div class="field">
+          <label for="difficulty">רמת קושי</label>
+          <select id="difficulty" class="input">
+            <option value="mix" selected>מעורבב</option>
+            <option value="easy">קל</option>
+            <option value="medium">בינוני</option>
+            <option value="hard">קשה</option>
+          </select>
+          <div class="hint">אפשר להתחיל במעורבב ואז לשדרג.</div>
+        </div>
+
+        <div class="field">
+          <label for="questionCount">מספר שאלות</label>
+          <select id="questionCount" class="input">
+            <option value="10" selected>10</option>
+            <option value="15">15</option>
+            <option value="20">20</option>
+            <option value="30">30</option>
+          </select>
+          <div class="hint">שאלות נשלפות אקראית מהמאגר.</div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>קטגוריות</label>
+        <div id="categoryChips" class="chips" aria-label="קטגוריות"></div>
+        <div class="hint">אם לא תבחר — ייבחר "הכל".</div>
+      </div>
+
+      <div class="actions">
+        <button id="btnStart" class="btn primary" type="button">התחל משחק</button>
+        <button id="btnHighscores" class="btn" type="button">טבלת שיאים</button>
+      </div>
+    </section>
+
+    <!-- SCREEN: GAME -->
+    <section id="screenGame" class="card screen hidden" aria-live="polite">
+      <div class="gameTop">
+        <div class="stat">
+          <div class="statLabel">שאלה</div>
+          <div class="statValue"><span id="qIndex">1</span>/<span id="qTotal">10</span></div>
+        </div>
+
+        <div class="stat">
+          <div class="statLabel">ניקוד</div>
+          <div class="statValue"><span id="score">0</span></div>
+        </div>
+
+        <div class="stat">
+          <div class="statLabel">קומבו</div>
+          <div class="statValue"><span id="combo">0</span>×</div>
+        </div>
+
+        <div class="stat levelStat">
+          <div class="statLabel">רמה</div>
+          <div class="statValue"><span id="level">1</span></div>
+          <div class="xpBar" aria-label="XP">
+            <div class="xpFill" id="xpFill" style="width:0%"></div>
+          </div>
+          <div class="xpText"><span id="xpNow">0</span>/<span id="xpNeed">200</span> XP</div>
+        </div>
+
+        <div class="timer">
+          <div class="timerLabel">זמן</div>
+
+          <div class="bestTimer" title="שיא זמן לשאלה + זמן נוכחי">
+            <div class="bestLabel">⏱️ שיא</div>
+            <div class="bestValue"><span id="bestTime">--</span>s</div>
+            <div class="bestSub">עכשיו: <span id="runTime">0.0</span>s</div>
+          </div>
+
+          <div class="timerRing">
+            <svg viewBox="0 0 44 44" class="ring" aria-hidden="true">
+              <circle cx="22" cy="22" r="18" class="ringBg"></circle>
+              <circle cx="22" cy="22" r="18" class="ringFg" id="ringFg"></circle>
+            </svg>
+            <div class="timerValue" id="timeLeft">30</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="metaRow">
+  <div class="metaPills">
+    <span class="pill" id="pillCategory">Networking</span>
+    <span class="pill ghost" id="pillDifficulty">בינוני</span>
+    <span class="pill ghost" id="pillMode">מבחן</span>
+  </div>
+
+  <button id="btnQuitTop" class="btn danger ghost" type="button" title="יציאה לתפריט">⟵ יציאה</button>
+</div>
+
+
+<h2 id="questionText" class="question"></h2>
+
+      <div id="answers" class="answers"></div>
+
+      <div class="lifelines lifelinesBottom" aria-label="עזרות">
+        <button id="life5050" class="btn life" type="button">50:50 <span class="lifeCount" id="life5050Count">1</span></button>
+        <button id="lifeHint" class="btn life" type="button">רמז <span class="lifeCount" id="lifeHintCount">1</span></button>
+        <button id="lifeSkip" class="btn life" type="button">דילוג <span class="lifeCount" id="lifeSkipCount">1</span></button>
+        <button id="lifeAudience" class="btn life" type="button"> עזרת קהל</button>
+        <button id="lifePhone" class="btn life" type="button"> חבר טלפוני</button>
+      </div>
+
+      <div id="assistPanel" class="assistPanel hidden" aria-live="polite"></div>
+
+
+      <div id="feedback" class="feedback hidden">
+        <div class="feedbackHeader">
+          <div id="feedbackTitle" class="feedbackTitle">נכון ✅</div>
+          <div id="feedbackPoints" class="feedbackPoints">+120</div>
+        </div>
+        <div id="explanation" class="explanation"></div>
+
+        <div id="toastStack" class="toastStack" aria-live="polite" aria-atomic="true"></div>
+
+        <div class="feedbackActions">
+          <button id="btnNext" class="btn primary" type="button">הבא</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SCREEN: RESULT -->
+    <section id="screenResult" class="card screen hidden">
+      <h2 class="h1">סיכום משחק</h2>
+      <div class="resultGrid">
+        <div class="resultCard">
+          <div class="resultLabel">ניקוד</div>
+          <div class="resultValue" id="finalScore">0</div>
+        </div>
+        <div class="resultCard">
+          <div class="resultLabel">תשובות נכונות</div>
+          <div class="resultValue"><span id="finalCorrect">0</span>/<span id="finalTotal">0</span></div>
+        </div>
+        <div class="resultCard">
+          <div class="resultLabel">דיוק</div>
+          <div class="resultValue" id="finalAccuracy">0%</div>
+        </div>
+      </div>
+
+      <div class="analysisBox">
+        <div class="analysisTop">
+          <div class="analysisTitle">📌 ניתוח טעויות</div>
+          <button id="btnOpenAnalysis" class="btn ghost" type="button">פתח פירוט</button>
+        </div>
+        <div class="muted">בסוף המשחק תקבל פירוט של כל השאלות שטעית בהן + התשובה הנכונה + הסבר.</div>
+      </div>
+
+      <div class="actions">
+        <button id="btnPlayAgain" class="btn primary" type="button">שחק שוב</button>
+        <button id="btnBackHome" class="btn" type="button">חזרה לבית</button>
+        <button id="btnShowHighscores2" class="btn ghost" type="button">טבלת שיאים</button>
+      </div>
+    </section>
+
+    <!-- MODAL: HOW -->
+    <dialog id="dlgHow" class="modal">
+      <form method="dialog" class="modalBody">
+        <div class="modalHeader">
+          <div class="modalTitle">איך משחקים?</div>
+          <button class="btn ghost" value="close" aria-label="סגור">✕</button>
+        </div>
+
+        <ul class="bullets">
+          <li>בחר שם, מצב, קושי וקטגוריות.</li>
+          <li>במבחן: נגמר הזמן → נחשב טעות.</li>
+          <li>קומבו עולה על רצף נכונות ומגדיל ניקוד.</li>
+          <li>עזרות: 50:50 / רמז / דילוג / עזרת קהל / חבר טלפוני — פעם אחת כל משחק.</li>
+          <li>אחרי כל שאלה תקבל הסבר קצר כדי לזכור למבחן.</li>
+        </ul>
+
+        <div class="modalFooter">
+          <button class="btn primary" value="close">הבנתי</button>
+        </div>
+      </form>
+    </dialog>
+
+    <!-- MODAL: HIGHSCORES -->
+    <dialog id="dlgScores" class="modal">
+      <form method="dialog" class="modalBody">
+        <div class="modalHeader">
+          <div class="modalTitle">🏆 טבלת שיאים</div>
+          <div class="row">
+            <button id="btnClearScores" class="btn danger ghost" type="button">איפוס</button>
+            <button class="btn ghost" value="close" aria-label="סגור">✕</button>
+          </div>
+        </div>
+
+        <div class="tableWrap">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>שם</th>
+                <th>ניקוד</th>
+                <th>דיוק</th>
+                <th>תאריך</th>
+              </tr>
+            </thead>
+            <tbody id="scoresBody"></tbody>
+          </table>
+        </div>
+
+        <div class="modalFooter">
+          <button class="btn primary" value="close">סגור</button>
+        </div>
+      </form>
+    </dialog>
+
+    <!-- MODAL: ANALYSIS -->
+    <dialog id="dlgAnalysis" class="modal">
+      <form method="dialog" class="modalBody">
+        <div class="modalHeader">
+          <div class="modalTitle">🔎 ניתוח טעויות</div>
+          <button class="btn ghost" value="close" aria-label="סגור">✕</button>
+        </div>
+
+        <div id="analysisList" class="analysisList"></div>
+
+        <div class="modalFooter">
+          <button class="btn primary" value="close">סגור</button>
+        </div>
+      </form>
+    </dialog>
+
+  </main>
+
+  <footer class="footer">
+    <span class="muted">© Netanel Atia — All Rights Reserved</span>
+  </footer>
+
+  
+  </div>
+
+    <!-- MODAL: ACHIEVEMENTS -->
+    <dialog id="dlgAch" class="modal">
+      <form method="dialog" class="modalBody">
+        <div class="modalHeader">
+          <div class="modalTitle">🏆 השגים</div>
+          <button class="btn ghost" value="close" aria-label="סגור">✕</button>
+        </div>
+
+        <div class="muted" style="margin-bottom:10px;">שבור שיאים, תצבור XP ותפתח עוד ועוד תגים. הכל נשמר מקומית במחשב.</div>
+
+        <div id="achList" class="achList"></div>
+
+        <div class="modalFooter">
+          <button class="btn primary" value="close">סגור</button>
+        </div>
+      </form>
+    </dialog>
+<script src="app.js" defer></script>
+</body>
+</html>
