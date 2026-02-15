@@ -5710,47 +5710,68 @@ function renderAchievements(){
   const achievementsList = document.getElementById("achList");
   if(!achievementsList) return;
 
-  const fmtMs = (ms) => {
-    if(ms == null || !isFinite(ms)) return "--";
+  // mm:ss / hh:mm:ss
+  const fmtDuration = (ms) => {
+    ms = Number(ms);
+    if(!isFinite(ms) || ms <= 0) return "00:00";
+    const totalSec = Math.floor(ms / 1000);
+    const h = Math.floor(totalSec / 3600);
+    const m = Math.floor((totalSec % 3600) / 60);
+    const s = totalSec % 60;
+    if(h > 0) return `${h}:${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`;
+    return `${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`;
+  };
+
+  // לשיאי מהירות (ms -> seconds display)
+  const fmtMsToSec = (ms) => {
+    ms = Number(ms);
+    if(!isFinite(ms) || ms <= 0) return "--";
     const s = ms / 1000;
     return (s < 10) ? s.toFixed(1) : s.toFixed(0);
   };
 
   const progressLabel = (a) => {
     const v = achValue(a);
+    const target = Number(a.target ?? 0);
 
-    // Speed / invert: נמוך יותר טוב
+    // Speed (invert): נמוך יותר טוב
     if(a.invert){
-      // אם אין עדיין זמן — תציג "--"
-      if(v == null || !isFinite(v) || v <= 0) return `-- / ≤${fmtMs(a.target)}s`;
-      return `${fmtMs(v)}s / ≤${fmtMs(a.target)}s`;
+      // אם אין עדיין שיא אמיתי - אל תציג מספרים מוזרים
+      if(!isFinite(v) || v <= 0 || v >= 9e8) return `-- / ≤${fmtMsToSec(target)}s`;
+      return `${fmtMsToSec(v)}s / ≤${fmtMsToSec(target)}s`;
+    }
+
+    // Time Played: להציג כזמן אמיתי
+    if(a.kind === "Time"){
+      const curMs = Math.max(0, Math.floor(v || 0));
+      return `${fmtDuration(Math.min(curMs, target))} / ${fmtDuration(target)}`;
     }
 
     // רגיל: X / Target
     const cur = Math.max(0, Math.floor(v || 0));
-    return `${Math.min(cur, a.target)} / ${a.target}`;
+    const safeTarget = target > 0 ? target : 1;
+    return `${Math.min(cur, safeTarget)} / ${safeTarget}`;
   };
 
   achievementsList.innerHTML = ACH.map(a => {
-    // 1) כותרת קטגוריה
-    if (a.type === "header") {
+    // כותרת קטגוריה
+    if(a.type === "header"){
       return `<div class="achHeader">${a.title}</div>`;
     }
 
-    // 2) הישג רגיל
+    // הישג רגיל
     const unlocked = achUnlocked(a);
-    const p = achProgress(a); // חייב להיות הפונקציה שלך שמטפלת ב-invert (כמו שביקשת)
-
+    const p = achProgress(a);
     const pct = Math.round(p * 100);
 
     return `
       <div class="achCard ${unlocked ? "unlocked" : "locked"}">
         <div class="achTop">
-          <div class="achTitle">${a.title}</div>
-          <div class="achKind">${a.kind}</div>
+          <div class="achTitle">${a.title ?? ""}</div>
+          <div class="achKind">${a.kind ?? ""}</div>
         </div>
 
-        <div class="achDesc">${a.desc}</div>
+        <div class="achDesc">${a.desc ?? ""}</div>
 
         <div class="achBar">
           <div class="achBarFill" style="width:${pct}%"></div>
@@ -5764,6 +5785,7 @@ function renderAchievements(){
     `;
   }).join("");
 }
+
 
 
 
