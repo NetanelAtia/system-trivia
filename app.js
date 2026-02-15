@@ -5031,6 +5031,7 @@ const QUESTION_BANK = [
 
 ];
 
+
 function achValue(a){
   try { return Number(a.get?.()) || 0; } catch(e){ return 0; }
 }
@@ -5220,6 +5221,11 @@ function loadProfile(){
     p.stats.noHelpWins = Number(p.stats.noHelpWins || 0);
     p.stats.catCorrect = p.stats.catCorrect || {};
 
+    // תמיד לסנכרן Level + XP לפי totalXP (כדי למנוע חוסר-סנכרון אחרי עדכונים/איפוסים)
+    const derived = deriveLevelFromTotalXP(p.stats.totalXP || 0);
+    p.level = derived.level;
+    p.xp = derived.xp;
+
     return p;
   }catch(e){
     return {
@@ -5256,6 +5262,19 @@ function xpNeed(level){
   // Level starts at 0. curve: 200, 340, 480, ...
   return Math.round(200 + (level * 140));
 }
+
+function deriveLevelFromTotalXP(totalXP){
+  // מקור אמת: totalXP -> level + xp בתוך הרמה (נשאר)
+  let lvl = 0;
+  let rem = Math.max(0, Number(totalXP || 0));
+
+  while(rem >= xpNeed(lvl)){
+    rem -= xpNeed(lvl);
+    lvl += 1;
+  }
+  return { level: lvl, xp: rem };
+}
+
 function updateLevelUI(){
   const need = xpNeed(profile.level);
   levelEl.textContent = String(profile.level);
@@ -5777,7 +5796,7 @@ const shown = Math.min(cur, t);
 // אם זה XP / Games וכו' - תן פורמט יפה עם פסיקים
 const pretty = (n) => Number(n).toLocaleString();
 
-return `${pretty(shown)} / ${pretty(t)}`;
+return `<span dir="ltr">${pretty(shown)} / ${pretty(t)}</span>`;
 
   };
 
