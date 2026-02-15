@@ -45,13 +45,12 @@ html, body{
   margin: 0;
   padding: 0;
   min-height: 100%;
-  background: none; /* חשוב: לא לדרוס את ה-background של body */
+  background: none; /* לא לדרוס את ה-gradient של body */
 }
 
 html{
-  background: var(--bg0); /* בסיס שמתאים גם ל-dark וגם ל-light */
+  background: var(--bg0);
 }
-
 
 /* iPhone Safe Area (Notch / Dynamic Island) */
 body{
@@ -1471,4 +1470,56 @@ body{
   .timer .bestSub{
     white-space: nowrap !important;
   }
+}
+
+
+/* --- Achievements highlight + progress --- */
+.achCard{
+  padding: 14px 14px;
+  border-radius: 16px;
+  border: 1px solid var(--stroke);
+  background: var(--card);
+  box-shadow: 0 10px 30px rgba(0,0,0,.18);
+  margin-bottom: 10px;
+  transition: transform .15s ease, box-shadow .15s ease, filter .15s ease;
+}
+
+.achCard.unlocked{
+  border-color: rgba(52,211,153,.55);
+  box-shadow: 0 14px 40px rgba(52,211,153,.10), 0 10px 30px rgba(0,0,0,.18);
+  filter: saturate(1.15);
+}
+
+.achCard.unlocked .achTitle{
+  text-shadow: 0 0 14px rgba(52,211,153,.22);
+}
+
+.achCard.locked{
+  opacity: .72;
+  filter: grayscale(.15);
+}
+
+.achTop{ display:flex; align-items:center; justify-content:space-between; gap:10px; }
+.achTitle{ font-weight: 900; }
+.achKind{ font-size: 12px; opacity: .8; padding: 4px 10px; border-radius: 999px; background: var(--card2); border:1px solid var(--stroke); }
+.achDesc{ margin-top: 6px; opacity: .9; }
+
+.achProgRow{ margin-top: 10px; display:flex; justify-content:space-between; align-items:center; gap:10px; }
+.achProgText{ font-size: 12px; opacity: .85; }
+.achBadge{ font-size: 11px; padding: 4px 10px; border-radius: 999px; border:1px solid var(--stroke); background: var(--card2); }
+
+.achBar{
+  margin-top: 8px;
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.08);
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,.08);
+}
+
+.achBarFill{
+  height: 100%;
+  width: 0%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--primary), var(--primary2));
 }

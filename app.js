@@ -5031,6 +5031,26 @@ const QUESTION_BANK = [
 
 ];
 
+function achValue(a){
+  try { return Number(a.get?.()) || 0; } catch(e){ return 0; }
+}
+
+function achUnlocked(a){
+  const v = achValue(a);
+  return a.invert ? (v <= a.target) : (v >= a.target);
+}
+
+function achProgress(a){
+  const v = achValue(a);
+  if(a.invert){
+    // invert: no classic progress; show state
+    return achUnlocked(a) ? 1 : 0;
+  }
+  return Math.max(0, Math.min(1, v / a.target));
+}
+
+
+
 
 
 const CATEGORIES = [
@@ -5291,25 +5311,172 @@ const ACH = [
   { id:"first_game", title:"התחלה חזקה", desc:"שחק משחק אחד.", kind:"Games", target:1, get: () => profile.stats.games },
   { id:"games_10", title:"התמדה", desc:"שחק 10 משחקים.", kind:"Games", target:10, get: () => profile.stats.games },
   { id:"games_50", title:"מכונת טריוויה", desc:"שחק 50 משחקים.", kind:"Games", target:50, get: () => profile.stats.games },
-
   { id:"correct_10", title:"10 נכונות", desc:"צבור 10 תשובות נכונות בסה״כ.", kind:"Correct", target:10, get: () => profile.stats.totalCorrect },
   { id:"correct_50", title:"50 נכונות", desc:"צבור 50 תשובות נכונות בסה״כ.", kind:"Correct", target:50, get: () => profile.stats.totalCorrect },
   { id:"correct_200", title:"200 נכונות", desc:"צבור 200 תשובות נכונות בסה״כ.", kind:"Correct", target:200, get: () => profile.stats.totalCorrect },
-
   { id:"combo_5", title:"קומבו 5×", desc:"הגע לקומבו 5 במשחק אחד.", kind:"Combo", target:5, get: () => profile.stats.bestCombo },
   { id:"combo_10", title:"קומבו 10×", desc:"הגע לקומבו 10 במשחק אחד.", kind:"Combo", target:10, get: () => profile.stats.bestCombo },
-
   { id:"speed_5s", title:"מהיר כמו פינג", desc:"ענה נכון על שאלה בפחות מ-5 שניות.", kind:"Speed", target:5000, get: () => profile.stats.fastestMs == null ? 999999 : profile.stats.fastestMs, invert:true },
   { id:"speed_3s", title:"מהירות של SSD", desc:"ענה נכון על שאלה בפחות מ-3 שניות.", kind:"Speed", target:3000, get: () => profile.stats.fastestMs == null ? 999999 : profile.stats.fastestMs, invert:true },
-
   { id:"perfect_1", title:"אפס טעויות", desc:"סיים משחק בלי טעויות (100%).", kind:"Perfect", target:1, get: () => profile.stats.perfectGames },
   { id:"perfect_5", title:"מושלם קבוע", desc:"סיים 5 משחקים בלי טעויות.", kind:"Perfect", target:5, get: () => profile.stats.perfectGames },
-
   { id:"lifeline_1", title:"עם קצת עזרה", desc:"השתמש בעזרה אחת לפחות.", kind:"Lifelines", target:1, get: () => profile.stats.lifelinesUsed },
   { id:"lifeline_20", title:"חובב עזרות", desc:"השתמש ב-20 עזרות סה״כ.", kind:"Lifelines", target:20, get: () => profile.stats.lifelinesUsed },
-
   { id:"cats_3", title:"גיוון", desc:"שחק ב-3 קטגוריות שונות.", kind:"Categories", target:3, get: () => Object.keys(profile.stats.catsPlayed || {}).length },
   { id:"cats_8", title:"רב-תחומי", desc:"שחק ב-8 קטגוריות שונות.", kind:"Categories", target:8, get: () => Object.keys(profile.stats.catsPlayed || {}).length },
+  { id:"games_100", title:"100 משחקים", desc:"שחק 100 משחקים.", kind:"Games", target:100, get: () => profile.stats.games },
+  { id:"games_150", title:"150 משחקים", desc:"שחק 150 משחקים.", kind:"Games", target:150, get: () => profile.stats.games },
+  { id:"games_200", title:"200 משחקים", desc:"שחק 200 משחקים.", kind:"Games", target:200, get: () => profile.stats.games },
+  { id:"games_250", title:"250 משחקים", desc:"שחק 250 משחקים.", kind:"Games", target:250, get: () => profile.stats.games },
+  { id:"games_300", title:"300 משחקים", desc:"שחק 300 משחקים.", kind:"Games", target:300, get: () => profile.stats.games },
+  { id:"games_400", title:"400 משחקים", desc:"שחק 400 משחקים.", kind:"Games", target:400, get: () => profile.stats.games },
+  { id:"games_500", title:"500 משחקים", desc:"שחק 500 משחקים.", kind:"Games", target:500, get: () => profile.stats.games },
+  { id:"games_750", title:"750 משחקים", desc:"שחק 750 משחקים.", kind:"Games", target:750, get: () => profile.stats.games },
+  { id:"games_1000", title:"1000 משחקים", desc:"שחק 1000 משחקים.", kind:"Games", target:1000, get: () => profile.stats.games },
+  { id:"correct_300", title:"300 נכונות", desc:"צבור 300 תשובות נכונות בסה״כ.", kind:"Correct", target:300, get: () => profile.stats.totalCorrect },
+  { id:"correct_400", title:"400 נכונות", desc:"צבור 400 תשובות נכונות בסה״כ.", kind:"Correct", target:400, get: () => profile.stats.totalCorrect },
+  { id:"correct_500", title:"500 נכונות", desc:"צבור 500 תשובות נכונות בסה״כ.", kind:"Correct", target:500, get: () => profile.stats.totalCorrect },
+  { id:"correct_750", title:"750 נכונות", desc:"צבור 750 תשובות נכונות בסה״כ.", kind:"Correct", target:750, get: () => profile.stats.totalCorrect },
+  { id:"correct_1000", title:"1000 נכונות", desc:"צבור 1000 תשובות נכונות בסה״כ.", kind:"Correct", target:1000, get: () => profile.stats.totalCorrect },
+  { id:"correct_1500", title:"1500 נכונות", desc:"צבור 1500 תשובות נכונות בסה״כ.", kind:"Correct", target:1500, get: () => profile.stats.totalCorrect },
+  { id:"correct_2000", title:"2000 נכונות", desc:"צבור 2000 תשובות נכונות בסה״כ.", kind:"Correct", target:2000, get: () => profile.stats.totalCorrect },
+  { id:"correct_5000", title:"5000 נכונות", desc:"צבור 5000 תשובות נכונות בסה״כ.", kind:"Correct", target:5000, get: () => profile.stats.totalCorrect },
+  { id:"answered_50", title:"50 שאלות", desc:"ענה על 50 שאלות בסה״כ.", kind:"Questions", target:50, get: () => profile.stats.totalAnswered || 0 },
+  { id:"answered_100", title:"100 שאלות", desc:"ענה על 100 שאלות בסה״כ.", kind:"Questions", target:100, get: () => profile.stats.totalAnswered || 0 },
+  { id:"answered_250", title:"250 שאלות", desc:"ענה על 250 שאלות בסה״כ.", kind:"Questions", target:250, get: () => profile.stats.totalAnswered || 0 },
+  { id:"answered_500", title:"500 שאלות", desc:"ענה על 500 שאלות בסה״כ.", kind:"Questions", target:500, get: () => profile.stats.totalAnswered || 0 },
+  { id:"answered_1000", title:"1000 שאלות", desc:"ענה על 1000 שאלות בסה״כ.", kind:"Questions", target:1000, get: () => profile.stats.totalAnswered || 0 },
+  { id:"answered_2500", title:"2500 שאלות", desc:"ענה על 2500 שאלות בסה״כ.", kind:"Questions", target:2500, get: () => profile.stats.totalAnswered || 0 },
+  { id:"answered_5000", title:"5000 שאלות", desc:"ענה על 5000 שאלות בסה״כ.", kind:"Questions", target:5000, get: () => profile.stats.totalAnswered || 0 },
+  { id:"answered_10000", title:"10000 שאלות", desc:"ענה על 10000 שאלות בסה״כ.", kind:"Questions", target:10000, get: () => profile.stats.totalAnswered || 0 },
+  { id:"combo_15", title:"קומבו 15×", desc:"הגע לקומבו 15 במשחק אחד.", kind:"Combo", target:15, get: () => profile.stats.bestCombo },
+  { id:"combo_20", title:"קומבו 20×", desc:"הגע לקומבו 20 במשחק אחד.", kind:"Combo", target:20, get: () => profile.stats.bestCombo },
+  { id:"combo_25", title:"קומבו 25×", desc:"הגע לקומבו 25 במשחק אחד.", kind:"Combo", target:25, get: () => profile.stats.bestCombo },
+  { id:"combo_30", title:"קומבו 30×", desc:"הגע לקומבו 30 במשחק אחד.", kind:"Combo", target:30, get: () => profile.stats.bestCombo },
+  { id:"combo_40", title:"קומבו 40×", desc:"הגע לקומבו 40 במשחק אחד.", kind:"Combo", target:40, get: () => profile.stats.bestCombo },
+  { id:"combo_50", title:"קומבו 50×", desc:"הגע לקומבו 50 במשחק אחד.", kind:"Combo", target:50, get: () => profile.stats.bestCombo },
+  { id:"combo_75", title:"קומבו 75×", desc:"הגע לקומבו 75 במשחק אחד.", kind:"Combo", target:75, get: () => profile.stats.bestCombo },
+  { id:"combo_100", title:"קומבו 100×", desc:"הגע לקומבו 100 במשחק אחד.", kind:"Combo", target:100, get: () => profile.stats.bestCombo },
+  { id:"speed_8000ms", title:"זריז", desc:"ענה נכון על שאלה בפחות מ-8 שניות.", kind:"Speed", target:8000, get: () => profile.stats.fastestMs == null ? 999999 : profile.stats.fastestMs, invert:true },
+  { id:"speed_6000ms", title:"מהיר", desc:"ענה נכון על שאלה בפחות מ-6 שניות.", kind:"Speed", target:6000, get: () => profile.stats.fastestMs == null ? 999999 : profile.stats.fastestMs, invert:true },
+  { id:"speed_4000ms", title:"טורבו", desc:"ענה נכון על שאלה בפחות מ-4 שניות.", kind:"Speed", target:4000, get: () => profile.stats.fastestMs == null ? 999999 : profile.stats.fastestMs, invert:true },
+  { id:"speed_2500ms", title:"מהירות NVMe", desc:"ענה נכון על שאלה בפחות מ-2.5 שניות.", kind:"Speed", target:2500, get: () => profile.stats.fastestMs == null ? 999999 : profile.stats.fastestMs, invert:true },
+  { id:"speed_2000ms", title:"מהירות RAM", desc:"ענה נכון על שאלה בפחות מ-2 שניות.", kind:"Speed", target:2000, get: () => profile.stats.fastestMs == null ? 999999 : profile.stats.fastestMs, invert:true },
+  { id:"speed_1500ms", title:"טיל בליסטי", desc:"ענה נכון על שאלה בפחות מ-1.5 שניות.", kind:"Speed", target:1500, get: () => profile.stats.fastestMs == null ? 999999 : profile.stats.fastestMs, invert:true },
+  { id:"speed_1200ms", title:"כמעט על-אנושי", desc:"ענה נכון על שאלה בפחות מ-1.2 שניות.", kind:"Speed", target:1200, get: () => profile.stats.fastestMs == null ? 999999 : profile.stats.fastestMs, invert:true },
+  { id:"speed_1000ms", title:"1 שנייה!", desc:"ענה נכון על שאלה בפחות מ-1 שניות.", kind:"Speed", target:1000, get: () => profile.stats.fastestMs == null ? 999999 : profile.stats.fastestMs, invert:true },
+  { id:"perfect_10", title:"מושלם ×10", desc:"סיים 10 משחקים בלי טעויות.", kind:"Perfect", target:10, get: () => profile.stats.perfectGames },
+  { id:"perfect_15", title:"מושלם ×15", desc:"סיים 15 משחקים בלי טעויות.", kind:"Perfect", target:15, get: () => profile.stats.perfectGames },
+  { id:"perfect_25", title:"מושלם ×25", desc:"סיים 25 משחקים בלי טעויות.", kind:"Perfect", target:25, get: () => profile.stats.perfectGames },
+  { id:"perfect_50", title:"מושלם ×50", desc:"סיים 50 משחקים בלי טעויות.", kind:"Perfect", target:50, get: () => profile.stats.perfectGames },
+  { id:"perfect_100", title:"מושלם ×100", desc:"סיים 100 משחקים בלי טעויות.", kind:"Perfect", target:100, get: () => profile.stats.perfectGames },
+  { id:"lifeline_50", title:"50 עזרות", desc:"השתמש ב-50 עזרות סה״כ.", kind:"Lifelines", target:50, get: () => profile.stats.lifelinesUsed },
+  { id:"lifeline_100", title:"100 עזרות", desc:"השתמש ב-100 עזרות סה״כ.", kind:"Lifelines", target:100, get: () => profile.stats.lifelinesUsed },
+  { id:"lifeline_200", title:"200 עזרות", desc:"השתמש ב-200 עזרות סה״כ.", kind:"Lifelines", target:200, get: () => profile.stats.lifelinesUsed },
+  { id:"lifeline_500", title:"500 עזרות", desc:"השתמש ב-500 עזרות סה״כ.", kind:"Lifelines", target:500, get: () => profile.stats.lifelinesUsed },
+  { id:"lifeline_1000", title:"1000 עזרות", desc:"השתמש ב-1000 עזרות סה״כ.", kind:"Lifelines", target:1000, get: () => profile.stats.lifelinesUsed },
+  { id:"nohelp_1", title:"סולו ×1", desc:"נצח 1 משחקים בלי להשתמש בעזרות.", kind:"NoHelp", target:1, get: () => profile.stats.noHelpWins || 0 },
+  { id:"nohelp_5", title:"סולו ×5", desc:"נצח 5 משחקים בלי להשתמש בעזרות.", kind:"NoHelp", target:5, get: () => profile.stats.noHelpWins || 0 },
+  { id:"nohelp_10", title:"סולו ×10", desc:"נצח 10 משחקים בלי להשתמש בעזרות.", kind:"NoHelp", target:10, get: () => profile.stats.noHelpWins || 0 },
+  { id:"nohelp_25", title:"סולו ×25", desc:"נצח 25 משחקים בלי להשתמש בעזרות.", kind:"NoHelp", target:25, get: () => profile.stats.noHelpWins || 0 },
+  { id:"nohelp_50", title:"סולו ×50", desc:"נצח 50 משחקים בלי להשתמש בעזרות.", kind:"NoHelp", target:50, get: () => profile.stats.noHelpWins || 0 },
+  { id:"nohelp_100", title:"סולו ×100", desc:"נצח 100 משחקים בלי להשתמש בעזרות.", kind:"NoHelp", target:100, get: () => profile.stats.noHelpWins || 0 },
+  { id:"acc_70", title:"דיוק 70%", desc:"סיים משחק עם דיוק של 70% ומעלה.", kind:"Accuracy", target:70, get: () => profile.stats.lastAccuracy || 0 },
+  { id:"acc_80", title:"דיוק 80%", desc:"סיים משחק עם דיוק של 80% ומעלה.", kind:"Accuracy", target:80, get: () => profile.stats.lastAccuracy || 0 },
+  { id:"acc_85", title:"דיוק 85%", desc:"סיים משחק עם דיוק של 85% ומעלה.", kind:"Accuracy", target:85, get: () => profile.stats.lastAccuracy || 0 },
+  { id:"acc_90", title:"דיוק 90%", desc:"סיים משחק עם דיוק של 90% ומעלה.", kind:"Accuracy", target:90, get: () => profile.stats.lastAccuracy || 0 },
+  { id:"acc_95", title:"דיוק 95%", desc:"סיים משחק עם דיוק של 95% ומעלה.", kind:"Accuracy", target:95, get: () => profile.stats.lastAccuracy || 0 },
+  { id:"acc_100", title:"דיוק 100%", desc:"סיים משחק עם דיוק של 100% ומעלה.", kind:"Accuracy", target:100, get: () => profile.stats.lastAccuracy || 0 },
+  { id:"cats_1_var", title:"1 קטגוריות", desc:"שחק ב-1 קטגוריות שונות.", kind:"Categories", target:1, get: () => Object.keys(profile.stats.catsPlayed || {}).length },
+  { id:"cats_3_var", title:"3 קטגוריות", desc:"שחק ב-3 קטגוריות שונות.", kind:"Categories", target:3, get: () => Object.keys(profile.stats.catsPlayed || {}).length },
+  { id:"cats_5_var", title:"5 קטגוריות", desc:"שחק ב-5 קטגוריות שונות.", kind:"Categories", target:5, get: () => Object.keys(profile.stats.catsPlayed || {}).length },
+  { id:"cats_8_var", title:"8 קטגוריות", desc:"שחק ב-8 קטגוריות שונות.", kind:"Categories", target:8, get: () => Object.keys(profile.stats.catsPlayed || {}).length },
+  { id:"cats_10_var", title:"10 קטגוריות", desc:"שחק ב-10 קטגוריות שונות.", kind:"Categories", target:10, get: () => Object.keys(profile.stats.catsPlayed || {}).length },
+  { id:"cats_12_var", title:"12 קטגוריות", desc:"שחק ב-12 קטגוריות שונות.", kind:"Categories", target:12, get: () => Object.keys(profile.stats.catsPlayed || {}).length },
+  { id:"cats_15_var", title:"15 קטגוריות", desc:"שחק ב-15 קטגוריות שונות.", kind:"Categories", target:15, get: () => Object.keys(profile.stats.catsPlayed || {}).length },
+  { id:"cats_20_var", title:"20 קטגוריות", desc:"שחק ב-20 קטגוריות שונות.", kind:"Categories", target:20, get: () => Object.keys(profile.stats.catsPlayed || {}).length },
+  { id:"time_900000", title:"רבע שעה", desc:"שחק זמן מצטבר של רבע שעה.", kind:"Time", target:900000, get: () => profile.stats.totalTimeMs || 0 },
+  { id:"time_1800000", title:"חצי שעה", desc:"שחק זמן מצטבר של חצי שעה.", kind:"Time", target:1800000, get: () => profile.stats.totalTimeMs || 0 },
+  { id:"time_3600000", title:"שעה", desc:"שחק זמן מצטבר של שעה.", kind:"Time", target:3600000, get: () => profile.stats.totalTimeMs || 0 },
+  { id:"time_7200000", title:"שעתיים", desc:"שחק זמן מצטבר של שעתיים.", kind:"Time", target:7200000, get: () => profile.stats.totalTimeMs || 0 },
+  { id:"time_18000000", title:"5 שעות", desc:"שחק זמן מצטבר של 5 שעות.", kind:"Time", target:18000000, get: () => profile.stats.totalTimeMs || 0 },
+  { id:"time_36000000", title:"10 שעות", desc:"שחק זמן מצטבר של 10 שעות.", kind:"Time", target:36000000, get: () => profile.stats.totalTimeMs || 0 },
+  { id:"time_90000000", title:"יום שלם", desc:"שחק זמן מצטבר של יום שלם.", kind:"Time", target:90000000, get: () => profile.stats.totalTimeMs || 0 },
+  { id:"time_180000000", title:"שני ימים", desc:"שחק זמן מצטבר של שני ימים.", kind:"Time", target:180000000, get: () => profile.stats.totalTimeMs || 0 },
+  { id:"time_360000000", title:"100 שעות", desc:"שחק זמן מצטבר של 100 שעות.", kind:"Time", target:360000000, get: () => profile.stats.totalTimeMs || 0 },
+  { id:"winstreak_3", title:"רצף 3", desc:"השג רצף של 3 נצחונות.", kind:"WinStreak", target:3, get: () => profile.stats.winStreakBest || 0 },
+  { id:"winstreak_5", title:"רצף 5", desc:"השג רצף של 5 נצחונות.", kind:"WinStreak", target:5, get: () => profile.stats.winStreakBest || 0 },
+  { id:"winstreak_7", title:"רצף 7", desc:"השג רצף של 7 נצחונות.", kind:"WinStreak", target:7, get: () => profile.stats.winStreakBest || 0 },
+  { id:"winstreak_10", title:"רצף 10", desc:"השג רצף של 10 נצחונות.", kind:"WinStreak", target:10, get: () => profile.stats.winStreakBest || 0 },
+  { id:"winstreak_15", title:"רצף 15", desc:"השג רצף של 15 נצחונות.", kind:"WinStreak", target:15, get: () => profile.stats.winStreakBest || 0 },
+  { id:"winstreak_20", title:"רצף 20", desc:"השג רצף של 20 נצחונות.", kind:"WinStreak", target:20, get: () => profile.stats.winStreakBest || 0 },
+  { id:"winstreak_30", title:"רצף 30", desc:"השג רצף של 30 נצחונות.", kind:"WinStreak", target:30, get: () => profile.stats.winStreakBest || 0 },
+  { id:"winstreak_50", title:"רצף 50", desc:"השג רצף של 50 נצחונות.", kind:"WinStreak", target:50, get: () => profile.stats.winStreakBest || 0 },
+  { id:"xp_250", title:"250 XP", desc:"הגע ל-250 XP.", kind:"XP", target:250, get: () => profile.xp || 0 },
+  { id:"xp_500", title:"500 XP", desc:"הגע ל-500 XP.", kind:"XP", target:500, get: () => profile.xp || 0 },
+  { id:"xp_1000", title:"1000 XP", desc:"הגע ל-1000 XP.", kind:"XP", target:1000, get: () => profile.xp || 0 },
+  { id:"xp_2000", title:"2000 XP", desc:"הגע ל-2000 XP.", kind:"XP", target:2000, get: () => profile.xp || 0 },
+  { id:"xp_5000", title:"5000 XP", desc:"הגע ל-5000 XP.", kind:"XP", target:5000, get: () => profile.xp || 0 },
+  { id:"xp_10000", title:"10000 XP", desc:"הגע ל-10000 XP.", kind:"XP", target:10000, get: () => profile.xp || 0 },
+  { id:"xp_25000", title:"25000 XP", desc:"הגע ל-25000 XP.", kind:"XP", target:25000, get: () => profile.xp || 0 },
+  { id:"xp_50000", title:"50000 XP", desc:"הגע ל-50000 XP.", kind:"XP", target:50000, get: () => profile.xp || 0 },
+  { id:"level_2", title:"Level 2", desc:"הגע לרמה 2.", kind:"Level", target:2, get: () => profile.level || 1 },
+  { id:"level_5", title:"Level 5", desc:"הגע לרמה 5.", kind:"Level", target:5, get: () => profile.level || 1 },
+  { id:"level_10", title:"Level 10", desc:"הגע לרמה 10.", kind:"Level", target:10, get: () => profile.level || 1 },
+  { id:"level_15", title:"Level 15", desc:"הגע לרמה 15.", kind:"Level", target:15, get: () => profile.level || 1 },
+  { id:"level_20", title:"Level 20", desc:"הגע לרמה 20.", kind:"Level", target:20, get: () => profile.level || 1 },
+  { id:"level_25", title:"Level 25", desc:"הגע לרמה 25.", kind:"Level", target:25, get: () => profile.level || 1 },
+  { id:"level_30", title:"Level 30", desc:"הגע לרמה 30.", kind:"Level", target:30, get: () => profile.level || 1 },
+  { id:"level_40", title:"Level 40", desc:"הגע לרמה 40.", kind:"Level", target:40, get: () => profile.level || 1 },
+  { id:"level_50", title:"Level 50", desc:"הגע לרמה 50.", kind:"Level", target:50, get: () => profile.level || 1 },
+  { id:"cat_networking_25", title:"Networking ×25", desc:"ענה נכון על 25 שאלות ב-Networking.", kind:"Cat Networking", target:25, get: () => (profile.stats.catCorrect?.[Networking] || 0) },
+  { id:"cat_networking_50", title:"Networking ×50", desc:"ענה נכון על 50 שאלות ב-Networking.", kind:"Cat Networking", target:50, get: () => (profile.stats.catCorrect?.[Networking] || 0) },
+  { id:"cat_networking_100", title:"Networking ×100", desc:"ענה נכון על 100 שאלות ב-Networking.", kind:"Cat Networking", target:100, get: () => (profile.stats.catCorrect?.[Networking] || 0) },
+  { id:"cat_networking_200", title:"Networking ×200", desc:"ענה נכון על 200 שאלות ב-Networking.", kind:"Cat Networking", target:200, get: () => (profile.stats.catCorrect?.[Networking] || 0) },
+  { id:"cat_dhcp_25", title:"DHCP ×25", desc:"ענה נכון על 25 שאלות ב-DHCP.", kind:"Cat DHCP", target:25, get: () => (profile.stats.catCorrect?.[DHCP] || 0) },
+  { id:"cat_dhcp_50", title:"DHCP ×50", desc:"ענה נכון על 50 שאלות ב-DHCP.", kind:"Cat DHCP", target:50, get: () => (profile.stats.catCorrect?.[DHCP] || 0) },
+  { id:"cat_dhcp_100", title:"DHCP ×100", desc:"ענה נכון על 100 שאלות ב-DHCP.", kind:"Cat DHCP", target:100, get: () => (profile.stats.catCorrect?.[DHCP] || 0) },
+  { id:"cat_dhcp_200", title:"DHCP ×200", desc:"ענה נכון על 200 שאלות ב-DHCP.", kind:"Cat DHCP", target:200, get: () => (profile.stats.catCorrect?.[DHCP] || 0) },
+  { id:"cat_dns_25", title:"DNS ×25", desc:"ענה נכון על 25 שאלות ב-DNS.", kind:"Cat DNS", target:25, get: () => (profile.stats.catCorrect?.[DNS] || 0) },
+  { id:"cat_dns_50", title:"DNS ×50", desc:"ענה נכון על 50 שאלות ב-DNS.", kind:"Cat DNS", target:50, get: () => (profile.stats.catCorrect?.[DNS] || 0) },
+  { id:"cat_dns_100", title:"DNS ×100", desc:"ענה נכון על 100 שאלות ב-DNS.", kind:"Cat DNS", target:100, get: () => (profile.stats.catCorrect?.[DNS] || 0) },
+  { id:"cat_dns_200", title:"DNS ×200", desc:"ענה נכון על 200 שאלות ב-DNS.", kind:"Cat DNS", target:200, get: () => (profile.stats.catCorrect?.[DNS] || 0) },
+  { id:"cat_active_directory_25", title:"Active Directory ×25", desc:"ענה נכון על 25 שאלות ב-Active Directory.", kind:"Cat Active Directory", target:25, get: () => (profile.stats.catCorrect?.["Active Directory"] || 0) },
+  { id:"cat_active_directory_50", title:"Active Directory ×50", desc:"ענה נכון על 50 שאלות ב-Active Directory.", kind:"Cat Active Directory", target:50, get: () => (profile.stats.catCorrect?.["Active Directory"] || 0) },
+  { id:"cat_active_directory_100", title:"Active Directory ×100", desc:"ענה נכון על 100 שאלות ב-Active Directory.", kind:"Cat Active Directory", target:100, get: () => (profile.stats.catCorrect?.["Active Directory"] || 0) },
+  { id:"cat_active_directory_200", title:"Active Directory ×200", desc:"ענה נכון על 200 שאלות ב-Active Directory.", kind:"Cat Active Directory", target:200, get: () => (profile.stats.catCorrect?.["Active Directory"] || 0) },
+  { id:"cat_gpo_25", title:"GPO ×25", desc:"ענה נכון על 25 שאלות ב-GPO.", kind:"Cat GPO", target:25, get: () => (profile.stats.catCorrect?.[GPO] || 0) },
+  { id:"cat_gpo_50", title:"GPO ×50", desc:"ענה נכון על 50 שאלות ב-GPO.", kind:"Cat GPO", target:50, get: () => (profile.stats.catCorrect?.[GPO] || 0) },
+  { id:"cat_gpo_100", title:"GPO ×100", desc:"ענה נכון על 100 שאלות ב-GPO.", kind:"Cat GPO", target:100, get: () => (profile.stats.catCorrect?.[GPO] || 0) },
+  { id:"cat_gpo_200", title:"GPO ×200", desc:"ענה נכון על 200 שאלות ב-GPO.", kind:"Cat GPO", target:200, get: () => (profile.stats.catCorrect?.[GPO] || 0) },
+  { id:"cat_file_server_25", title:"File Server ×25", desc:"ענה נכון על 25 שאלות ב-File Server.", kind:"Cat File Server", target:25, get: () => (profile.stats.catCorrect?.["File Server"] || 0) },
+  { id:"cat_file_server_50", title:"File Server ×50", desc:"ענה נכון על 50 שאלות ב-File Server.", kind:"Cat File Server", target:50, get: () => (profile.stats.catCorrect?.["File Server"] || 0) },
+  { id:"cat_file_server_100", title:"File Server ×100", desc:"ענה נכון על 100 שאלות ב-File Server.", kind:"Cat File Server", target:100, get: () => (profile.stats.catCorrect?.["File Server"] || 0) },
+  { id:"cat_file_server_200", title:"File Server ×200", desc:"ענה נכון על 200 שאלות ב-File Server.", kind:"Cat File Server", target:200, get: () => (profile.stats.catCorrect?.["File Server"] || 0) },
+  { id:"cat_raid_25", title:"RAID ×25", desc:"ענה נכון על 25 שאלות ב-RAID.", kind:"Cat RAID", target:25, get: () => (profile.stats.catCorrect?.[RAID] || 0) },
+  { id:"cat_raid_50", title:"RAID ×50", desc:"ענה נכון על 50 שאלות ב-RAID.", kind:"Cat RAID", target:50, get: () => (profile.stats.catCorrect?.[RAID] || 0) },
+  { id:"cat_raid_100", title:"RAID ×100", desc:"ענה נכון על 100 שאלות ב-RAID.", kind:"Cat RAID", target:100, get: () => (profile.stats.catCorrect?.[RAID] || 0) },
+  { id:"cat_raid_200", title:"RAID ×200", desc:"ענה נכון על 200 שאלות ב-RAID.", kind:"Cat RAID", target:200, get: () => (profile.stats.catCorrect?.[RAID] || 0) },
+  { id:"cat_wds_25", title:"WDS ×25", desc:"ענה נכון על 25 שאלות ב-WDS.", kind:"Cat WDS", target:25, get: () => (profile.stats.catCorrect?.[WDS] || 0) },
+  { id:"cat_wds_50", title:"WDS ×50", desc:"ענה נכון על 50 שאלות ב-WDS.", kind:"Cat WDS", target:50, get: () => (profile.stats.catCorrect?.[WDS] || 0) },
+  { id:"cat_wds_100", title:"WDS ×100", desc:"ענה נכון על 100 שאלות ב-WDS.", kind:"Cat WDS", target:100, get: () => (profile.stats.catCorrect?.[WDS] || 0) },
+  { id:"cat_wds_200", title:"WDS ×200", desc:"ענה נכון על 200 שאלות ב-WDS.", kind:"Cat WDS", target:200, get: () => (profile.stats.catCorrect?.[WDS] || 0) },
+  { id:"cat_troubleshooting_25", title:"Troubleshooting ×25", desc:"ענה נכון על 25 שאלות ב-Troubleshooting.", kind:"Cat Troubleshooting", target:25, get: () => (profile.stats.catCorrect?.[Troubleshooting] || 0) },
+  { id:"cat_troubleshooting_50", title:"Troubleshooting ×50", desc:"ענה נכון על 50 שאלות ב-Troubleshooting.", kind:"Cat Troubleshooting", target:50, get: () => (profile.stats.catCorrect?.[Troubleshooting] || 0) },
+  { id:"cat_troubleshooting_100", title:"Troubleshooting ×100", desc:"ענה נכון על 100 שאלות ב-Troubleshooting.", kind:"Cat Troubleshooting", target:100, get: () => (profile.stats.catCorrect?.[Troubleshooting] || 0) },
+  { id:"cat_troubleshooting_200", title:"Troubleshooting ×200", desc:"ענה נכון על 200 שאלות ב-Troubleshooting.", kind:"Cat Troubleshooting", target:200, get: () => (profile.stats.catCorrect?.[Troubleshooting] || 0) },
+  { id:"cat_nsx_25", title:"NSX ×25", desc:"ענה נכון על 25 שאלות ב-NSX.", kind:"Cat NSX", target:25, get: () => (profile.stats.catCorrect?.[NSX] || 0) },
+  { id:"cat_nsx_50", title:"NSX ×50", desc:"ענה נכון על 50 שאלות ב-NSX.", kind:"Cat NSX", target:50, get: () => (profile.stats.catCorrect?.[NSX] || 0) },
+  { id:"cat_nsx_100", title:"NSX ×100", desc:"ענה נכון על 100 שאלות ב-NSX.", kind:"Cat NSX", target:100, get: () => (profile.stats.catCorrect?.[NSX] || 0) },
+  { id:"cat_nsx_200", title:"NSX ×200", desc:"ענה נכון על 200 שאלות ב-NSX.", kind:"Cat NSX", target:200, get: () => (profile.stats.catCorrect?.[NSX] || 0) },
+  { id:"cat_subnet_mask_25", title:"Subnet Mask ×25", desc:"ענה נכון על 25 שאלות ב-Subnet Mask.", kind:"Cat Subnet Mask", target:25, get: () => (profile.stats.catCorrect?.["Subnet Mask"] || 0) },
+  { id:"cat_subnet_mask_50", title:"Subnet Mask ×50", desc:"ענה נכון על 50 שאלות ב-Subnet Mask.", kind:"Cat Subnet Mask", target:50, get: () => (profile.stats.catCorrect?.["Subnet Mask"] || 0) },
+  { id:"cat_subnet_mask_100", title:"Subnet Mask ×100", desc:"ענה נכון על 100 שאלות ב-Subnet Mask.", kind:"Cat Subnet Mask", target:100, get: () => (profile.stats.catCorrect?.["Subnet Mask"] || 0) },
+  { id:"cat_subnet_mask_200", title:"Subnet Mask ×200", desc:"ענה נכון על 200 שאלות ב-Subnet Mask.", kind:"Cat Subnet Mask", target:200, get: () => (profile.stats.catCorrect?.["Subnet Mask"] || 0) },
+  { id:"cat_default_gateway_25", title:"Default Gateway ×25", desc:"ענה נכון על 25 שאלות ב-Default Gateway.", kind:"Cat Default Gateway", target:25, get: () => (profile.stats.catCorrect?.["Default Gateway"] || 0) },
+  { id:"cat_default_gateway_50", title:"Default Gateway ×50", desc:"ענה נכון על 50 שאלות ב-Default Gateway.", kind:"Cat Default Gateway", target:50, get: () => (profile.stats.catCorrect?.["Default Gateway"] || 0) },
+  { id:"cat_default_gateway_100", title:"Default Gateway ×100", desc:"ענה נכון על 100 שאלות ב-Default Gateway.", kind:"Cat Default Gateway", target:100, get: () => (profile.stats.catCorrect?.["Default Gateway"] || 0) },
+  { id:"cat_default_gateway_200", title:"Default Gateway ×200", desc:"ענה נכון על 200 שאלות ב-Default Gateway.", kind:"Cat Default Gateway", target:200, get: () => (profile.stats.catCorrect?.["Default Gateway"] || 0) }
 ];
 
 function isAchUnlocked(id){ return !!profile.unlocked[id]; }
@@ -5347,23 +5514,42 @@ function checkAchievements(){
 }
 
 function renderAchievements(){
-  if(!achList) return;
-  achList.innerHTML = "";
-  ACH.forEach(ach => {
-    const { done, prog } = computeAchProgress(ach);
-    const unlocked = isAchUnlocked(ach.id);
-    const item = document.createElement("div");
-    item.className = "achItem" + (unlocked ? " achUnlocked" : "");
-    const pct = Math.round(prog * 100);
-    item.innerHTML = `
+  const list = document.getElementById("achList");
+  if(!list) return;
+
+  list.innerHTML = "";
+
+  ACH.forEach(a => {
+    const unlocked = achUnlocked(a);
+    const v = achValue(a);
+    const p = achProgress(a);
+
+    const card = document.createElement("div");
+    // keep any existing styling hooks + new one
+    card.className = "achievement-card achCard " + (unlocked ? "unlocked" : "locked");
+
+    const progressText = a.invert
+      ? (unlocked ? "הושג ✅" : "עדיין לא ⏳")
+      : `${Math.min(v, a.target)} / ${a.target}`;
+
+    card.innerHTML = `
       <div class="achTop">
-        <div class="achTitle">${escapeHtml(ach.title)}</div>
-        <div class="achBadge">${unlocked ? "Unlocked ✅" : `${pct}%`}</div>
+        <div class="achTitle">${a.title}</div>
+        <div class="achKind">${a.kind}</div>
       </div>
-      <div class="achDesc">${escapeHtml(ach.desc)}</div>
-      <div class="achBar"><div class="achFill" style="width:${pct}%"></div></div>
+      <div class="achDesc">${a.desc}</div>
+
+      <div class="achProgRow">
+        <div class="achProgText">${progressText}</div>
+        <div class="achBadge">${unlocked ? "UNLOCKED" : "LOCKED"}</div>
+      </div>
+
+      <div class="achBar">
+        <div class="achBarFill" style="width:${Math.round(p*100)}%"></div>
+      </div>
     `;
-    achList.appendChild(item);
+
+    list.appendChild(card);
   });
 }
 
