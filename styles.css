@@ -1532,3 +1532,22 @@ body{
   border: 1px solid var(--stroke);
   background: rgba(255,255,255,0.06);
 }
+
+
+/* Total XP line under current level XP */
+.xpTotal{
+  font-size: 13px;
+  opacity: 0.75;
+  margin-top: 4px;
+
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+
+.xpRemain{
+  font-size: 13px;
+  opacity: 0.85;
+  margin-top: 4px;
+  font-variant-numeric: tabular-nums;
+}

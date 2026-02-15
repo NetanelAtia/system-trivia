@@ -5030,7 +5030,6 @@ const QUESTION_BANK = [
 
 
 ];
-;
 
 function achValue(a){
   try { return Number(a.get?.()) || 0; } catch(e){ return 0; }
@@ -5098,6 +5097,8 @@ const levelEl = $("#level");
 const xpFill = $("#xpFill");
 const xpNowEl = $("#xpNow");
 const xpNeedEl = $("#xpNeed");
+const xpTotalEl = $("#xpTotal");
+const xpRemainEl = $("#xpRemain");
 
 const bestTimeEl = $("#bestTime");
 const runTimeEl = $("#runTime");
@@ -5201,6 +5202,18 @@ function loadProfile(){
     p.stats.catsPlayed = p.stats.catsPlayed || {};
     p.stats.totalAnswered = Number(p.stats.totalAnswered || 0);
     p.stats.totalTimeMs = Number(p.stats.totalTimeMs || 0);
+    const hasTotalXP = (p.stats.totalXP != null);
+    p.stats.totalXP = Number(p.stats.totalXP || 0);
+    // Backward-compat: if older saves don't have totalXP, reconstruct it from level+xp.
+    // TotalXP = sum(need for previous levels) + current level XP
+    if(!hasTotalXP){
+      const L = Math.max(0, Number(p.level || 0));
+      const cur = Math.max(0, Number(p.xp || 0));
+      // Level starts at 0. Required XP per level: 200 + 140*level
+      // totalXP = sum_{i=0}^{L-1}(200+140*i) + cur
+      const prevSum = (L * 200) + (140 * (L - 1) * L / 2);
+      p.stats.totalXP = Math.round(prevSum + cur);
+    }
     p.stats.lastAccuracy = Number(p.stats.lastAccuracy || 0);
     p.stats.winStreakCurrent = Number(p.stats.winStreakCurrent || 0);
     p.stats.winStreakBest = Number(p.stats.winStreakBest || 0);
@@ -5225,6 +5238,7 @@ function loadProfile(){
         catsPlayed: {}
         ,totalAnswered: 0,
         totalTimeMs: 0,
+        totalXP: 0,
         lastAccuracy: 0,
         winStreakCurrent: 0,
         winStreakBest: 0,
@@ -5239,8 +5253,8 @@ function saveProfile(){
   localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
 }
 function xpNeed(level){
-  // curve that feels good: 200, 340, 480, ...
-  return Math.round(200 + (level - 1) * 140);
+  // Level starts at 0. curve: 200, 340, 480, ...
+  return Math.round(200 + (level * 140));
 }
 function updateLevelUI(){
   const need = xpNeed(profile.level);
@@ -5249,6 +5263,13 @@ function updateLevelUI(){
   xpNeedEl.textContent = String(need);
   const pct = need ? clamp(profile.xp / need, 0, 1) : 0;
   xpFill.style.width = `${Math.round(pct * 100)}%`;
+  if(xpRemainEl){
+    const rem = Math.max(0, need - profile.xp);
+    xpRemainEl.textContent = `Remaining: ${rem.toLocaleString()} XP`;
+  }
+  if(xpTotalEl){
+      xpTotalEl.textContent = `XP מצטבר: ${(profile.stats.totalXP || 0).toLocaleString()}`;
+  }
 }
 function toast(kind, title, body, ms=2600){
   if(!toastStack) return;
@@ -5282,6 +5303,7 @@ function addXP(amount, reason, anchorEl){
   if(!amount) return;
   popFx(`+${amount} XP`, "xp", anchorEl);
   profile.xp += amount;
+  profile.stats.totalXP = Number(profile.stats.totalXP || 0) + amount;
 
   let leveled = false;
   while(profile.xp >= xpNeed(profile.level)){
@@ -5473,8 +5495,8 @@ const ACH = [
   { id:"time_7200000", title:"שעתיים", desc:"שחק זמן מצטבר של שעתיים.", kind:"Time", target:7200000, get: () => profile.stats.totalTimeMs || 0 },
   { id:"time_18000000", title:"5 שעות", desc:"שחק זמן מצטבר של 5 שעות.", kind:"Time", target:18000000, get: () => profile.stats.totalTimeMs || 0 },
   { id:"time_36000000", title:"10 שעות", desc:"שחק זמן מצטבר של 10 שעות.", kind:"Time", target:36000000, get: () => profile.stats.totalTimeMs || 0 },
-  { id:"time_90000000", title:"יום שלם", desc:"שחק זמן מצטבר של יום שלם.", kind:"Time", target:90000000, get: () => profile.stats.totalTimeMs || 0 },
-  { id:"time_180000000", title:"שני ימים", desc:"שחק זמן מצטבר של שני ימים.", kind:"Time", target:180000000, get: () => profile.stats.totalTimeMs || 0 },
+  { id:"time_90000000", title:"יום שלם", desc:"שחק זמן מצטבר של יום שלם.", kind:"Time", target:86400000, get: () => profile.stats.totalTimeMs || 0 },
+  { id:"time_180000000", title:"שני ימים", desc:"שחק זמן מצטבר של שני ימים.", kind:"Time", target:172800000, get: () => profile.stats.totalTimeMs || 0 },
   { id:"time_360000000", title:"100 שעות", desc:"שחק זמן מצטבר של 100 שעות.", kind:"Time", target:360000000, get: () => profile.stats.totalTimeMs || 0 },
 
   // =========================
@@ -5494,14 +5516,14 @@ const ACH = [
   // ⭐ XP (השארתי כמו שהיה — סולם XP אחר הגיוני)
   // =========================
   { type:"header", title:"⭐ XP (נקודות ניסיון)" },
-  { id:"xp_250", title:"250 XP", desc:"הגע ל-250 XP.", kind:"XP", target:250, get: () => profile.xp || 0 },
-  { id:"xp_500", title:"500 XP", desc:"הגע ל-500 XP.", kind:"XP", target:500, get: () => profile.xp || 0 },
-  { id:"xp_1000", title:"1000 XP", desc:"הגע ל-1000 XP.", kind:"XP", target:1000, get: () => profile.xp || 0 },
-  { id:"xp_2000", title:"2000 XP", desc:"הגע ל-2000 XP.", kind:"XP", target:2000, get: () => profile.xp || 0 },
-  { id:"xp_5000", title:"5000 XP", desc:"הגע ל-5000 XP.", kind:"XP", target:5000, get: () => profile.xp || 0 },
-  { id:"xp_10000", title:"10000 XP", desc:"הגע ל-10000 XP.", kind:"XP", target:10000, get: () => profile.xp || 0 },
-  { id:"xp_25000", title:"25000 XP", desc:"הגע ל-25000 XP.", kind:"XP", target:25000, get: () => profile.xp || 0 },
-  { id:"xp_50000", title:"50000 XP", desc:"הגע ל-50000 XP.", kind:"XP", target:50000, get: () => profile.xp || 0 },
+  { id:"xp_250", title:"250 XP", desc:"הגע ל-250 XP.", kind:"XP", target:250, get: () => profile.stats.totalXP || 0 },
+  { id:"xp_500", title:"500 XP", desc:"הגע ל-500 XP.", kind:"XP", target:500, get: () => profile.stats.totalXP || 0 },
+  { id:"xp_1000", title:"1000 XP", desc:"הגע ל-1000 XP.", kind:"XP", target:1000, get: () => profile.stats.totalXP || 0 },
+  { id:"xp_2000", title:"2000 XP", desc:"הגע ל-2000 XP.", kind:"XP", target:2000, get: () => profile.stats.totalXP || 0 },
+  { id:"xp_5000", title:"5000 XP", desc:"הגע ל-5000 XP.", kind:"XP", target:5000, get: () => profile.stats.totalXP || 0 },
+  { id:"xp_10000", title:"10000 XP", desc:"הגע ל-10000 XP.", kind:"XP", target:10000, get: () => profile.stats.totalXP || 0 },
+  { id:"xp_25000", title:"25000 XP", desc:"הגע ל-25000 XP.", kind:"XP", target:25000, get: () => profile.stats.totalXP || 0 },
+  { id:"xp_50000", title:"50000 XP", desc:"הגע ל-50000 XP.", kind:"XP", target:50000, get: () => profile.stats.totalXP || 0 },
 
   // =========================
   // 🧬 Level (השארתי כמו שהיה — רמות לא חייבות להיות לפי הסולם הזה)
@@ -5747,10 +5769,16 @@ function renderAchievements(){
       return `${fmtDuration(Math.min(curMs, target))} / ${fmtDuration(target)}`;
     }
 
-    // רגיל: X / Target
-    const cur = Math.max(0, Math.floor(v || 0));
-    const safeTarget = target > 0 ? target : 1;
-    return `${Math.min(cur, safeTarget)} / ${safeTarget}`;
+    // רגיל: X / Target (תצוגה לא עוברת את היעד)
+const cur = Math.max(0, Math.floor(v || 0));
+const t = Math.max(1, Math.floor(target || 1));
+const shown = Math.min(cur, t);
+
+// אם זה XP / Games וכו' - תן פורמט יפה עם פסיקים
+const pretty = (n) => Number(n).toLocaleString();
+
+return `${pretty(shown)} / ${pretty(t)}`;
+
   };
 
   achievementsList.innerHTML = ACH.map(a => {
