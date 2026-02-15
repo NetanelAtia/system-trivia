@@ -5030,6 +5030,7 @@ const QUESTION_BANK = [
 
 
 ];
+;
 
 function achValue(a){
   try { return Number(a.get?.()) || 0; } catch(e){ return 0; }
@@ -5198,6 +5199,14 @@ function loadProfile(){
     p.stats.perfectGames = Number(p.stats.perfectGames || 0);
     p.stats.lifelinesUsed = Number(p.stats.lifelinesUsed || 0);
     p.stats.catsPlayed = p.stats.catsPlayed || {};
+    p.stats.totalAnswered = Number(p.stats.totalAnswered || 0);
+    p.stats.totalTimeMs = Number(p.stats.totalTimeMs || 0);
+    p.stats.lastAccuracy = Number(p.stats.lastAccuracy || 0);
+    p.stats.winStreakCurrent = Number(p.stats.winStreakCurrent || 0);
+    p.stats.winStreakBest = Number(p.stats.winStreakBest || 0);
+    p.stats.noHelpWins = Number(p.stats.noHelpWins || 0);
+    p.stats.catCorrect = p.stats.catCorrect || {};
+
     return p;
   }catch(e){
     return {
@@ -5214,6 +5223,14 @@ function loadProfile(){
         perfectGames: 0,
         lifelinesUsed: 0,
         catsPlayed: {}
+        ,totalAnswered: 0,
+        totalTimeMs: 0,
+        lastAccuracy: 0,
+        winStreakCurrent: 0,
+        winStreakBest: 0,
+        noHelpWins: 0,
+        catCorrect: {}
+
       }
     };
   }
@@ -5429,46 +5446,46 @@ const ACH = [
   { id:"level_30", title:"Level 30", desc:"הגע לרמה 30.", kind:"Level", target:30, get: () => profile.level || 1 },
   { id:"level_40", title:"Level 40", desc:"הגע לרמה 40.", kind:"Level", target:40, get: () => profile.level || 1 },
   { id:"level_50", title:"Level 50", desc:"הגע לרמה 50.", kind:"Level", target:50, get: () => profile.level || 1 },
-  { id:"cat_networking_25", title:"Networking ×25", desc:"ענה נכון על 25 שאלות ב-Networking.", kind:"Cat Networking", target:25, get: () => (profile.stats.catCorrect?.[Networking] || 0) },
-  { id:"cat_networking_50", title:"Networking ×50", desc:"ענה נכון על 50 שאלות ב-Networking.", kind:"Cat Networking", target:50, get: () => (profile.stats.catCorrect?.[Networking] || 0) },
-  { id:"cat_networking_100", title:"Networking ×100", desc:"ענה נכון על 100 שאלות ב-Networking.", kind:"Cat Networking", target:100, get: () => (profile.stats.catCorrect?.[Networking] || 0) },
-  { id:"cat_networking_200", title:"Networking ×200", desc:"ענה נכון על 200 שאלות ב-Networking.", kind:"Cat Networking", target:200, get: () => (profile.stats.catCorrect?.[Networking] || 0) },
-  { id:"cat_dhcp_25", title:"DHCP ×25", desc:"ענה נכון על 25 שאלות ב-DHCP.", kind:"Cat DHCP", target:25, get: () => (profile.stats.catCorrect?.[DHCP] || 0) },
-  { id:"cat_dhcp_50", title:"DHCP ×50", desc:"ענה נכון על 50 שאלות ב-DHCP.", kind:"Cat DHCP", target:50, get: () => (profile.stats.catCorrect?.[DHCP] || 0) },
-  { id:"cat_dhcp_100", title:"DHCP ×100", desc:"ענה נכון על 100 שאלות ב-DHCP.", kind:"Cat DHCP", target:100, get: () => (profile.stats.catCorrect?.[DHCP] || 0) },
-  { id:"cat_dhcp_200", title:"DHCP ×200", desc:"ענה נכון על 200 שאלות ב-DHCP.", kind:"Cat DHCP", target:200, get: () => (profile.stats.catCorrect?.[DHCP] || 0) },
-  { id:"cat_dns_25", title:"DNS ×25", desc:"ענה נכון על 25 שאלות ב-DNS.", kind:"Cat DNS", target:25, get: () => (profile.stats.catCorrect?.[DNS] || 0) },
-  { id:"cat_dns_50", title:"DNS ×50", desc:"ענה נכון על 50 שאלות ב-DNS.", kind:"Cat DNS", target:50, get: () => (profile.stats.catCorrect?.[DNS] || 0) },
-  { id:"cat_dns_100", title:"DNS ×100", desc:"ענה נכון על 100 שאלות ב-DNS.", kind:"Cat DNS", target:100, get: () => (profile.stats.catCorrect?.[DNS] || 0) },
-  { id:"cat_dns_200", title:"DNS ×200", desc:"ענה נכון על 200 שאלות ב-DNS.", kind:"Cat DNS", target:200, get: () => (profile.stats.catCorrect?.[DNS] || 0) },
+  { id:"cat_networking_25", title:"Networking ×25", desc:"ענה נכון על 25 שאלות ב-Networking.", kind:"Cat Networking", target:25, get: () => (profile.stats.catCorrect?.["Networking"] || 0) },
+  { id:"cat_networking_50", title:"Networking ×50", desc:"ענה נכון על 50 שאלות ב-Networking.", kind:"Cat Networking", target:50, get: () => (profile.stats.catCorrect?.["Networking"] || 0) },
+  { id:"cat_networking_100", title:"Networking ×100", desc:"ענה נכון על 100 שאלות ב-Networking.", kind:"Cat Networking", target:100, get: () => (profile.stats.catCorrect?.["Networking"] || 0) },
+  { id:"cat_networking_200", title:"Networking ×200", desc:"ענה נכון על 200 שאלות ב-Networking.", kind:"Cat Networking", target:200, get: () => (profile.stats.catCorrect?.["Networking"] || 0) },
+  { id:"cat_dhcp_25", title:"DHCP ×25", desc:"ענה נכון על 25 שאלות ב-DHCP.", kind:"Cat DHCP", target:25, get: () => (profile.stats.catCorrect?.["DHCP"] || 0) },
+  { id:"cat_dhcp_50", title:"DHCP ×50", desc:"ענה נכון על 50 שאלות ב-DHCP.", kind:"Cat DHCP", target:50, get: () => (profile.stats.catCorrect?.["DHCP"] || 0) },
+  { id:"cat_dhcp_100", title:"DHCP ×100", desc:"ענה נכון על 100 שאלות ב-DHCP.", kind:"Cat DHCP", target:100, get: () => (profile.stats.catCorrect?.["DHCP"] || 0) },
+  { id:"cat_dhcp_200", title:"DHCP ×200", desc:"ענה נכון על 200 שאלות ב-DHCP.", kind:"Cat DHCP", target:200, get: () => (profile.stats.catCorrect?.["DHCP"] || 0) },
+  { id:"cat_dns_25", title:"DNS ×25", desc:"ענה נכון על 25 שאלות ב-DNS.", kind:"Cat DNS", target:25, get: () => (profile.stats.catCorrect?.["DNS"] || 0) },
+  { id:"cat_dns_50", title:"DNS ×50", desc:"ענה נכון על 50 שאלות ב-DNS.", kind:"Cat DNS", target:50, get: () => (profile.stats.catCorrect?.["DNS"] || 0) },
+  { id:"cat_dns_100", title:"DNS ×100", desc:"ענה נכון על 100 שאלות ב-DNS.", kind:"Cat DNS", target:100, get: () => (profile.stats.catCorrect?.["DNS"] || 0) },
+  { id:"cat_dns_200", title:"DNS ×200", desc:"ענה נכון על 200 שאלות ב-DNS.", kind:"Cat DNS", target:200, get: () => (profile.stats.catCorrect?.["DNS"] || 0) },
   { id:"cat_active_directory_25", title:"Active Directory ×25", desc:"ענה נכון על 25 שאלות ב-Active Directory.", kind:"Cat Active Directory", target:25, get: () => (profile.stats.catCorrect?.["Active Directory"] || 0) },
   { id:"cat_active_directory_50", title:"Active Directory ×50", desc:"ענה נכון על 50 שאלות ב-Active Directory.", kind:"Cat Active Directory", target:50, get: () => (profile.stats.catCorrect?.["Active Directory"] || 0) },
   { id:"cat_active_directory_100", title:"Active Directory ×100", desc:"ענה נכון על 100 שאלות ב-Active Directory.", kind:"Cat Active Directory", target:100, get: () => (profile.stats.catCorrect?.["Active Directory"] || 0) },
   { id:"cat_active_directory_200", title:"Active Directory ×200", desc:"ענה נכון על 200 שאלות ב-Active Directory.", kind:"Cat Active Directory", target:200, get: () => (profile.stats.catCorrect?.["Active Directory"] || 0) },
-  { id:"cat_gpo_25", title:"GPO ×25", desc:"ענה נכון על 25 שאלות ב-GPO.", kind:"Cat GPO", target:25, get: () => (profile.stats.catCorrect?.[GPO] || 0) },
-  { id:"cat_gpo_50", title:"GPO ×50", desc:"ענה נכון על 50 שאלות ב-GPO.", kind:"Cat GPO", target:50, get: () => (profile.stats.catCorrect?.[GPO] || 0) },
-  { id:"cat_gpo_100", title:"GPO ×100", desc:"ענה נכון על 100 שאלות ב-GPO.", kind:"Cat GPO", target:100, get: () => (profile.stats.catCorrect?.[GPO] || 0) },
-  { id:"cat_gpo_200", title:"GPO ×200", desc:"ענה נכון על 200 שאלות ב-GPO.", kind:"Cat GPO", target:200, get: () => (profile.stats.catCorrect?.[GPO] || 0) },
+  { id:"cat_gpo_25", title:"GPO ×25", desc:"ענה נכון על 25 שאלות ב-GPO.", kind:"Cat GPO", target:25, get: () => (profile.stats.catCorrect?.["GPO"] || 0) },
+  { id:"cat_gpo_50", title:"GPO ×50", desc:"ענה נכון על 50 שאלות ב-GPO.", kind:"Cat GPO", target:50, get: () => (profile.stats.catCorrect?.["GPO"] || 0) },
+  { id:"cat_gpo_100", title:"GPO ×100", desc:"ענה נכון על 100 שאלות ב-GPO.", kind:"Cat GPO", target:100, get: () => (profile.stats.catCorrect?.["GPO"] || 0) },
+  { id:"cat_gpo_200", title:"GPO ×200", desc:"ענה נכון על 200 שאלות ב-GPO.", kind:"Cat GPO", target:200, get: () => (profile.stats.catCorrect?.["GPO"] || 0) },
   { id:"cat_file_server_25", title:"File Server ×25", desc:"ענה נכון על 25 שאלות ב-File Server.", kind:"Cat File Server", target:25, get: () => (profile.stats.catCorrect?.["File Server"] || 0) },
   { id:"cat_file_server_50", title:"File Server ×50", desc:"ענה נכון על 50 שאלות ב-File Server.", kind:"Cat File Server", target:50, get: () => (profile.stats.catCorrect?.["File Server"] || 0) },
   { id:"cat_file_server_100", title:"File Server ×100", desc:"ענה נכון על 100 שאלות ב-File Server.", kind:"Cat File Server", target:100, get: () => (profile.stats.catCorrect?.["File Server"] || 0) },
   { id:"cat_file_server_200", title:"File Server ×200", desc:"ענה נכון על 200 שאלות ב-File Server.", kind:"Cat File Server", target:200, get: () => (profile.stats.catCorrect?.["File Server"] || 0) },
-  { id:"cat_raid_25", title:"RAID ×25", desc:"ענה נכון על 25 שאלות ב-RAID.", kind:"Cat RAID", target:25, get: () => (profile.stats.catCorrect?.[RAID] || 0) },
-  { id:"cat_raid_50", title:"RAID ×50", desc:"ענה נכון על 50 שאלות ב-RAID.", kind:"Cat RAID", target:50, get: () => (profile.stats.catCorrect?.[RAID] || 0) },
-  { id:"cat_raid_100", title:"RAID ×100", desc:"ענה נכון על 100 שאלות ב-RAID.", kind:"Cat RAID", target:100, get: () => (profile.stats.catCorrect?.[RAID] || 0) },
-  { id:"cat_raid_200", title:"RAID ×200", desc:"ענה נכון על 200 שאלות ב-RAID.", kind:"Cat RAID", target:200, get: () => (profile.stats.catCorrect?.[RAID] || 0) },
-  { id:"cat_wds_25", title:"WDS ×25", desc:"ענה נכון על 25 שאלות ב-WDS.", kind:"Cat WDS", target:25, get: () => (profile.stats.catCorrect?.[WDS] || 0) },
-  { id:"cat_wds_50", title:"WDS ×50", desc:"ענה נכון על 50 שאלות ב-WDS.", kind:"Cat WDS", target:50, get: () => (profile.stats.catCorrect?.[WDS] || 0) },
-  { id:"cat_wds_100", title:"WDS ×100", desc:"ענה נכון על 100 שאלות ב-WDS.", kind:"Cat WDS", target:100, get: () => (profile.stats.catCorrect?.[WDS] || 0) },
-  { id:"cat_wds_200", title:"WDS ×200", desc:"ענה נכון על 200 שאלות ב-WDS.", kind:"Cat WDS", target:200, get: () => (profile.stats.catCorrect?.[WDS] || 0) },
-  { id:"cat_troubleshooting_25", title:"Troubleshooting ×25", desc:"ענה נכון על 25 שאלות ב-Troubleshooting.", kind:"Cat Troubleshooting", target:25, get: () => (profile.stats.catCorrect?.[Troubleshooting] || 0) },
-  { id:"cat_troubleshooting_50", title:"Troubleshooting ×50", desc:"ענה נכון על 50 שאלות ב-Troubleshooting.", kind:"Cat Troubleshooting", target:50, get: () => (profile.stats.catCorrect?.[Troubleshooting] || 0) },
-  { id:"cat_troubleshooting_100", title:"Troubleshooting ×100", desc:"ענה נכון על 100 שאלות ב-Troubleshooting.", kind:"Cat Troubleshooting", target:100, get: () => (profile.stats.catCorrect?.[Troubleshooting] || 0) },
-  { id:"cat_troubleshooting_200", title:"Troubleshooting ×200", desc:"ענה נכון על 200 שאלות ב-Troubleshooting.", kind:"Cat Troubleshooting", target:200, get: () => (profile.stats.catCorrect?.[Troubleshooting] || 0) },
-  { id:"cat_nsx_25", title:"NSX ×25", desc:"ענה נכון על 25 שאלות ב-NSX.", kind:"Cat NSX", target:25, get: () => (profile.stats.catCorrect?.[NSX] || 0) },
-  { id:"cat_nsx_50", title:"NSX ×50", desc:"ענה נכון על 50 שאלות ב-NSX.", kind:"Cat NSX", target:50, get: () => (profile.stats.catCorrect?.[NSX] || 0) },
-  { id:"cat_nsx_100", title:"NSX ×100", desc:"ענה נכון על 100 שאלות ב-NSX.", kind:"Cat NSX", target:100, get: () => (profile.stats.catCorrect?.[NSX] || 0) },
-  { id:"cat_nsx_200", title:"NSX ×200", desc:"ענה נכון על 200 שאלות ב-NSX.", kind:"Cat NSX", target:200, get: () => (profile.stats.catCorrect?.[NSX] || 0) },
+  { id:"cat_raid_25", title:"RAID ×25", desc:"ענה נכון על 25 שאלות ב-RAID.", kind:"Cat RAID", target:25, get: () => (profile.stats.catCorrect?.["RAID"] || 0) },
+  { id:"cat_raid_50", title:"RAID ×50", desc:"ענה נכון על 50 שאלות ב-RAID.", kind:"Cat RAID", target:50, get: () => (profile.stats.catCorrect?.["RAID"] || 0) },
+  { id:"cat_raid_100", title:"RAID ×100", desc:"ענה נכון על 100 שאלות ב-RAID.", kind:"Cat RAID", target:100, get: () => (profile.stats.catCorrect?.["RAID"] || 0) },
+  { id:"cat_raid_200", title:"RAID ×200", desc:"ענה נכון על 200 שאלות ב-RAID.", kind:"Cat RAID", target:200, get: () => (profile.stats.catCorrect?.["RAID"] || 0) },
+  { id:"cat_wds_25", title:"WDS ×25", desc:"ענה נכון על 25 שאלות ב-WDS.", kind:"Cat WDS", target:25, get: () => (profile.stats.catCorrect?.["WDS"] || 0) },
+  { id:"cat_wds_50", title:"WDS ×50", desc:"ענה נכון על 50 שאלות ב-WDS.", kind:"Cat WDS", target:50, get: () => (profile.stats.catCorrect?.["WDS"] || 0) },
+  { id:"cat_wds_100", title:"WDS ×100", desc:"ענה נכון על 100 שאלות ב-WDS.", kind:"Cat WDS", target:100, get: () => (profile.stats.catCorrect?.["WDS"] || 0) },
+  { id:"cat_wds_200", title:"WDS ×200", desc:"ענה נכון על 200 שאלות ב-WDS.", kind:"Cat WDS", target:200, get: () => (profile.stats.catCorrect?.["WDS"] || 0) },
+  { id:"cat_troubleshooting_25", title:"Troubleshooting ×25", desc:"ענה נכון על 25 שאלות ב-Troubleshooting.", kind:"Cat Troubleshooting", target:25, get: () => (profile.stats.catCorrect?.["Troubleshooting"] || 0) },
+  { id:"cat_troubleshooting_50", title:"Troubleshooting ×50", desc:"ענה נכון על 50 שאלות ב-Troubleshooting.", kind:"Cat Troubleshooting", target:50, get: () => (profile.stats.catCorrect?.["Troubleshooting"] || 0) },
+  { id:"cat_troubleshooting_100", title:"Troubleshooting ×100", desc:"ענה נכון על 100 שאלות ב-Troubleshooting.", kind:"Cat Troubleshooting", target:100, get: () => (profile.stats.catCorrect?.["Troubleshooting"] || 0) },
+  { id:"cat_troubleshooting_200", title:"Troubleshooting ×200", desc:"ענה נכון על 200 שאלות ב-Troubleshooting.", kind:"Cat Troubleshooting", target:200, get: () => (profile.stats.catCorrect?.["Troubleshooting"] || 0) },
+  { id:"cat_nsx_25", title:"NSX ×25", desc:"ענה נכון על 25 שאלות ב-NSX.", kind:"Cat NSX", target:25, get: () => (profile.stats.catCorrect?.["NSX"] || 0) },
+  { id:"cat_nsx_50", title:"NSX ×50", desc:"ענה נכון על 50 שאלות ב-NSX.", kind:"Cat NSX", target:50, get: () => (profile.stats.catCorrect?.["NSX"] || 0) },
+  { id:"cat_nsx_100", title:"NSX ×100", desc:"ענה נכון על 100 שאלות ב-NSX.", kind:"Cat NSX", target:100, get: () => (profile.stats.catCorrect?.["NSX"] || 0) },
+  { id:"cat_nsx_200", title:"NSX ×200", desc:"ענה נכון על 200 שאלות ב-NSX.", kind:"Cat NSX", target:200, get: () => (profile.stats.catCorrect?.["NSX"] || 0) },
   { id:"cat_subnet_mask_25", title:"Subnet Mask ×25", desc:"ענה נכון על 25 שאלות ב-Subnet Mask.", kind:"Cat Subnet Mask", target:25, get: () => (profile.stats.catCorrect?.["Subnet Mask"] || 0) },
   { id:"cat_subnet_mask_50", title:"Subnet Mask ×50", desc:"ענה נכון על 50 שאלות ב-Subnet Mask.", kind:"Cat Subnet Mask", target:50, get: () => (profile.stats.catCorrect?.["Subnet Mask"] || 0) },
   { id:"cat_subnet_mask_100", title:"Subnet Mask ×100", desc:"ענה נכון על 100 שאלות ב-Subnet Mask.", kind:"Cat Subnet Mask", target:100, get: () => (profile.stats.catCorrect?.["Subnet Mask"] || 0) },
@@ -5557,6 +5574,7 @@ function renderAchievements(){
    PER-QUESTION RUN TIMER + BEST
 ------------------------------ */
 let qStartMs = 0;
+let gameStartMs = 0;
 let runTimerId = null;
 let currentQKey = null;
 
@@ -5749,7 +5767,8 @@ function onTimeUp(){
   const q = state.deck[state.idx];
   const elapsedMs = Math.max(0, performance.now() - qStartMs);
   profile.stats.totalWrong += 1;
-  profile.stats.catsPlayed[q.cat] = true;
+    profile.stats.totalAnswered += 1;
+profile.stats.catsPlayed[q.cat] = true;
   saveProfile();
   addXP(4, "נגמר הזמן ⏱️", scoreEl);
   checkAchievements();
@@ -5787,7 +5806,8 @@ function use5050(){
   if(state.life.fifty <= 0 || state.locked) return;
   state.life.fifty -= 1;
   profile.stats.lifelinesUsed += 1;
-  saveProfile();
+    state.usedLifelinesThisGame = Number(state.usedLifelinesThisGame || 0) + 1;
+saveProfile();
   checkAchievements();
   updateLifelinesUI();
 
@@ -5806,7 +5826,8 @@ function useHint(){
   if(state.life.hint <= 0 || state.locked) return;
   state.life.hint -= 1;
   profile.stats.lifelinesUsed += 1;
-  saveProfile();
+    state.usedLifelinesThisGame = Number(state.usedLifelinesThisGame || 0) + 1;
+saveProfile();
   checkAchievements();
   updateLifelinesUI();
 
@@ -5821,7 +5842,8 @@ function useSkip(){
   if(state.life.skip <= 0 || state.locked) return;
   state.life.skip -= 1;
   profile.stats.lifelinesUsed += 1;
-  saveProfile();
+    state.usedLifelinesThisGame = Number(state.usedLifelinesThisGame || 0) + 1;
+saveProfile();
   checkAchievements();
   updateLifelinesUI();
 
@@ -5904,7 +5926,8 @@ function useAudience(){
   if(state.life.audience <= 0 || state.locked) return;
   state.life.audience -= 1;
   profile.stats.lifelinesUsed += 1;
-  saveProfile();
+    state.usedLifelinesThisGame = Number(state.usedLifelinesThisGame || 0) + 1;
+saveProfile();
   checkAchievements();
   updateLifelinesUI();
 
@@ -5937,7 +5960,8 @@ function usePhone(){
   if(state.life.phone <= 0 || state.locked) return;
   state.life.phone -= 1;
   profile.stats.lifelinesUsed += 1;
-  saveProfile();
+    state.usedLifelinesThisGame = Number(state.usedLifelinesThisGame || 0) + 1;
+saveProfile();
   checkAchievements();
   updateLifelinesUI();
 
@@ -5947,6 +5971,8 @@ function usePhone(){
 
 
 function resetGame(){
+  gameStartMs = performance.now();
+  state.usedLifelinesThisGame = 0;
   state.idx = 0;
   state.score = 0;
   state.combo = 0;
@@ -6074,7 +6100,9 @@ function onPick(i){
     state.combo += 1;
     // profile stats
     profile.stats.totalCorrect += 1;
-    profile.stats.catsPlayed[q.cat] = true;
+        profile.stats.totalAnswered += 1;
+    profile.stats.catCorrect[q.cat] = Number(profile.stats.catCorrect[q.cat] || 0) + 1;
+profile.stats.catsPlayed[q.cat] = true;
     const pts = calcPoints(true);
     state.score += pts;
     scoreEl.textContent = String(state.score);
@@ -6098,7 +6126,8 @@ function onPick(i){
     scheduleFeedbackAutoNext();
     } else {
     profile.stats.totalWrong += 1;
-    profile.stats.catsPlayed[q.cat] = true;
+        profile.stats.totalAnswered += 1;
+profile.stats.catsPlayed[q.cat] = true;
     saveProfile();
     addXP(6, "ניסיון גם שווה XP 🙂", scoreEl);
     checkAchievements();
@@ -6135,7 +6164,29 @@ function endGame(){
   // profile stats (end of game)
   profile.stats.games += 1;
   if(acc === 100) profile.stats.perfectGames += 1;
-  profile.stats.bestCombo = Math.max(profile.stats.bestCombo, state.combo);
+  
+  // store last accuracy for Accuracy achievements
+  profile.stats.lastAccuracy = acc;
+
+  // total time played (ms) for Time achievements
+  const gameMs = Math.max(0, performance.now() - (gameStartMs || performance.now()));
+  profile.stats.totalTimeMs += Math.round(gameMs);
+
+  // define "win" for streaks: 70%+ accuracy
+  const isWin = acc >= 70;
+
+  if(isWin){
+    profile.stats.winStreakCurrent = Number(profile.stats.winStreakCurrent || 0) + 1;
+    profile.stats.winStreakBest = Math.max(Number(profile.stats.winStreakBest || 0), profile.stats.winStreakCurrent);
+  } else {
+    profile.stats.winStreakCurrent = 0;
+  }
+
+  // NoHelp wins: win without using any lifeline in this game
+  if(isWin && Number(state.usedLifelinesThisGame || 0) === 0){
+    profile.stats.noHelpWins = Number(profile.stats.noHelpWins || 0) + 1;
+  }
+profile.stats.bestCombo = Math.max(profile.stats.bestCombo, state.combo);
   saveProfile();
   checkAchievements();
 
@@ -6345,3 +6396,12 @@ document.addEventListener("keydown", (e) => {
   state.timeLeft = state.timerSec;
   updateTimerUI();
 })();
+
+function resetAchievements(){
+  if(!confirm("אתה בטוח שברצונך לאפס את כל ההישגים והסטטיסטיקות?")) return;
+
+  localStorage.removeItem("syslab_trivia_profile_v1");
+  localStorage.removeItem("syslab_trivia_highscores_v2");
+
+  location.reload();
+}
