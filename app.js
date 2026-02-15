@@ -5186,7 +5186,7 @@ function loadProfile(){
     if(!raw) throw new Error("no profile");
     const p = JSON.parse(raw);
     // minimal hardening
-    if(typeof p.level !== "number") p.level = 1;
+    if(typeof p.level !== "number") p.level = 0;
     if(typeof p.xp !== "number") p.xp = 0;
     p.bestTimes = p.bestTimes || {};
     p.unlocked = p.unlocked || {};
@@ -5210,7 +5210,7 @@ function loadProfile(){
     return p;
   }catch(e){
     return {
-      level: 1,
+      level: 0,
       xp: 0,
       bestTimes: {},        // { [qKey]: ms }
       unlocked: {},         // { [achId]: true }
@@ -5437,15 +5437,15 @@ const ACH = [
   { id:"xp_10000", title:"10000 XP", desc:"הגע ל-10000 XP.", kind:"XP", target:10000, get: () => profile.xp || 0 },
   { id:"xp_25000", title:"25000 XP", desc:"הגע ל-25000 XP.", kind:"XP", target:25000, get: () => profile.xp || 0 },
   { id:"xp_50000", title:"50000 XP", desc:"הגע ל-50000 XP.", kind:"XP", target:50000, get: () => profile.xp || 0 },
-  { id:"level_2", title:"Level 2", desc:"הגע לרמה 2.", kind:"Level", target:2, get: () => profile.level || 1 },
-  { id:"level_5", title:"Level 5", desc:"הגע לרמה 5.", kind:"Level", target:5, get: () => profile.level || 1 },
-  { id:"level_10", title:"Level 10", desc:"הגע לרמה 10.", kind:"Level", target:10, get: () => profile.level || 1 },
-  { id:"level_15", title:"Level 15", desc:"הגע לרמה 15.", kind:"Level", target:15, get: () => profile.level || 1 },
-  { id:"level_20", title:"Level 20", desc:"הגע לרמה 20.", kind:"Level", target:20, get: () => profile.level || 1 },
-  { id:"level_25", title:"Level 25", desc:"הגע לרמה 25.", kind:"Level", target:25, get: () => profile.level || 1 },
-  { id:"level_30", title:"Level 30", desc:"הגע לרמה 30.", kind:"Level", target:30, get: () => profile.level || 1 },
-  { id:"level_40", title:"Level 40", desc:"הגע לרמה 40.", kind:"Level", target:40, get: () => profile.level || 1 },
-  { id:"level_50", title:"Level 50", desc:"הגע לרמה 50.", kind:"Level", target:50, get: () => profile.level || 1 },
+  { id:"level_2", title:"Level 2", desc:"הגע לרמה 2.", kind:"Level", target:2, get: () => (profile.level ?? 0) },
+  { id:"level_5", title:"Level 5", desc:"הגע לרמה 5.", kind:"Level", target:5, get: () => (profile.level ?? 0) },
+  { id:"level_10", title:"Level 10", desc:"הגע לרמה 10.", kind:"Level", target:10, get: () => (profile.level ?? 0) },
+  { id:"level_15", title:"Level 15", desc:"הגע לרמה 15.", kind:"Level", target:15, get: () => (profile.level ?? 0) },
+  { id:"level_20", title:"Level 20", desc:"הגע לרמה 20.", kind:"Level", target:20, get: () => (profile.level ?? 0) },
+  { id:"level_25", title:"Level 25", desc:"הגע לרמה 25.", kind:"Level", target:25, get: () => (profile.level ?? 0) },
+  { id:"level_30", title:"Level 30", desc:"הגע לרמה 30.", kind:"Level", target:30, get: () => (profile.level ?? 0) },
+  { id:"level_40", title:"Level 40", desc:"הגע לרמה 40.", kind:"Level", target:40, get: () => (profile.level ?? 0) },
+  { id:"level_50", title:"Level 50", desc:"הגע לרמה 50.", kind:"Level", target:50, get: () => (profile.level ?? 0) },
   { id:"cat_networking_25", title:"Networking ×25", desc:"ענה נכון על 25 שאלות ב-Networking.", kind:"Cat Networking", target:25, get: () => (profile.stats.catCorrect?.["Networking"] || 0) },
   { id:"cat_networking_50", title:"Networking ×50", desc:"ענה נכון על 50 שאלות ב-Networking.", kind:"Cat Networking", target:50, get: () => (profile.stats.catCorrect?.["Networking"] || 0) },
   { id:"cat_networking_100", title:"Networking ×100", desc:"ענה נכון על 100 שאלות ב-Networking.", kind:"Cat Networking", target:100, get: () => (profile.stats.catCorrect?.["Networking"] || 0) },
@@ -6408,16 +6408,8 @@ function resetAchievements(){
   const ok = confirm("⚠️ זה יאפס את כל ההתקדמות, הרמות, ה-XP והשיאים.\nאתה בטוח?");
   if(!ok) return;
 
-  // מחיקה מוחלטת של נתוני משחק
-  localStorage.removeItem("syslab_trivia_profile_v1");
-  localStorage.removeItem("syslab_trivia_highscores_v2");
-
-  // איפוס אובייקט בזיכרון אם קיים
-  if (typeof profile !== "undefined") {
-    profile = null;
-  }
-
-  // רענון קשיח
-  location.reload(true);
+  localStorage.clear();   // מוחק הכל מהמשחק
+  location.reload();      // טוען מחדש
 }
+
 
