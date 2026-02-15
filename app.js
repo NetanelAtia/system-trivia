@@ -6405,10 +6405,19 @@ document.addEventListener("keydown", (e) => {
 })();
 
 function resetAchievements(){
-  if(!confirm("אתה בטוח שברצונך לאפס את כל ההישגים והסטטיסטיקות?")) return;
+  const ok = confirm("⚠️ זה יאפס את כל ההתקדמות, הרמות, ה-XP והשיאים.\nאתה בטוח?");
+  if(!ok) return;
 
+  // מחיקה מוחלטת של נתוני משחק
   localStorage.removeItem("syslab_trivia_profile_v1");
   localStorage.removeItem("syslab_trivia_highscores_v2");
 
-  location.reload();
+  // איפוס אובייקט בזיכרון אם קיים
+  if (typeof profile !== "undefined") {
+    profile = null;
+  }
+
+  // רענון קשיח
+  location.reload(true);
 }
+
