@@ -45,8 +45,13 @@ html, body{
   margin: 0;
   padding: 0;
   min-height: 100%;
-  background: #0b1020; /* צבע בסיס מתחת לגרדיאנט */
+  background: none; /* חשוב: לא לדרוס את ה-background של body */
 }
+
+html{
+  background: var(--bg0); /* בסיס שמתאים גם ל-dark וגם ל-light */
+}
+
 
 /* iPhone Safe Area (Notch / Dynamic Island) */
 body{
