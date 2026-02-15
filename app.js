@@ -5333,8 +5333,6 @@ const ACH = [
   { id:"correct_200", title:"200 נכונות", desc:"צבור 200 תשובות נכונות בסה״כ.", kind:"Correct", target:200, get: () => profile.stats.totalCorrect },
   { id:"combo_5", title:"קומבו 5×", desc:"הגע לקומבו 5 במשחק אחד.", kind:"Combo", target:5, get: () => profile.stats.bestCombo },
   { id:"combo_10", title:"קומבו 10×", desc:"הגע לקומבו 10 במשחק אחד.", kind:"Combo", target:10, get: () => profile.stats.bestCombo },
-  { id:"speed_5s", title:"מהיר כמו פינג", desc:"ענה נכון על שאלה בפחות מ-5 שניות.", kind:"Speed", target:5000, get: () => profile.stats.fastestMs == null ? 999999 : profile.stats.fastestMs, invert:true },
-  { id:"speed_3s", title:"מהירות של SSD", desc:"ענה נכון על שאלה בפחות מ-3 שניות.", kind:"Speed", target:3000, get: () => profile.stats.fastestMs == null ? 999999 : profile.stats.fastestMs, invert:true },
   { id:"perfect_1", title:"אפס טעויות", desc:"סיים משחק בלי טעויות (100%).", kind:"Perfect", target:1, get: () => profile.stats.perfectGames },
   { id:"perfect_5", title:"מושלם קבוע", desc:"סיים 5 משחקים בלי טעויות.", kind:"Perfect", target:5, get: () => profile.stats.perfectGames },
   { id:"lifeline_1", title:"עם קצת עזרה", desc:"השתמש בעזרה אחת לפחות.", kind:"Lifelines", target:1, get: () => profile.stats.lifelinesUsed },
