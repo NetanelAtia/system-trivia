@@ -5710,23 +5710,41 @@ function renderAchievements(){
   const achievementsList = document.getElementById("achList");
   if(!achievementsList) return;
 
-  achievementsList.innerHTML = ACH.map(a => {
+  const fmtMs = (ms) => {
+    if(ms == null || !isFinite(ms)) return "--";
+    const s = ms / 1000;
+    return (s < 10) ? s.toFixed(1) : s.toFixed(0);
+  };
 
-    // ===== כותרת =====
+  const progressLabel = (a) => {
+    const v = achValue(a);
+
+    // Speed / invert: נמוך יותר טוב
+    if(a.invert){
+      // אם אין עדיין זמן — תציג "--"
+      if(v == null || !isFinite(v) || v <= 0) return `-- / ≤${fmtMs(a.target)}s`;
+      return `${fmtMs(v)}s / ≤${fmtMs(a.target)}s`;
+    }
+
+    // רגיל: X / Target
+    const cur = Math.max(0, Math.floor(v || 0));
+    return `${Math.min(cur, a.target)} / ${a.target}`;
+  };
+
+  achievementsList.innerHTML = ACH.map(a => {
+    // 1) כותרת קטגוריה
     if (a.type === "header") {
       return `<div class="achHeader">${a.title}</div>`;
     }
 
-    // ===== הישג רגיל =====
-    const current = achValue(a);
-    const target = a.target || 1;
-
+    // 2) הישג רגיל
     const unlocked = achUnlocked(a);
-    const percent = Math.max(0, Math.min(100, Math.round((current / target) * 100)));
+    const p = achProgress(a); // חייב להיות הפונקציה שלך שמטפלת ב-invert (כמו שביקשת)
+
+    const pct = Math.round(p * 100);
 
     return `
       <div class="achCard ${unlocked ? "unlocked" : "locked"}">
-        
         <div class="achTop">
           <div class="achTitle">${a.title}</div>
           <div class="achKind">${a.kind}</div>
@@ -5735,18 +5753,18 @@ function renderAchievements(){
         <div class="achDesc">${a.desc}</div>
 
         <div class="achBar">
-          <div class="achBarFill" style="width:${percent}%"></div>
+          <div class="achBarFill" style="width:${pct}%"></div>
         </div>
 
         <div class="achMeta">
-          <span>${current} / ${target}</span>
-          <span>${percent}%</span>
+          <span>${progressLabel(a)}</span>
+          <span>${unlocked ? "✅ נפתח" : "🔒 נעול"} • ${pct}%</span>
         </div>
-
       </div>
     `;
   }).join("");
 }
+
 
 
 
