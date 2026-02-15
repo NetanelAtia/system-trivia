@@ -5493,7 +5493,14 @@ const ACH = [
   { id:"cat_default_gateway_25", title:"Default Gateway ×25", desc:"ענה נכון על 25 שאלות ב-Default Gateway.", kind:"Cat Default Gateway", target:25, get: () => (profile.stats.catCorrect?.["Default Gateway"] || 0) },
   { id:"cat_default_gateway_50", title:"Default Gateway ×50", desc:"ענה נכון על 50 שאלות ב-Default Gateway.", kind:"Cat Default Gateway", target:50, get: () => (profile.stats.catCorrect?.["Default Gateway"] || 0) },
   { id:"cat_default_gateway_100", title:"Default Gateway ×100", desc:"ענה נכון על 100 שאלות ב-Default Gateway.", kind:"Cat Default Gateway", target:100, get: () => (profile.stats.catCorrect?.["Default Gateway"] || 0) },
-  { id:"cat_default_gateway_200", title:"Default Gateway ×200", desc:"ענה נכון על 200 שאלות ב-Default Gateway.", kind:"Cat Default Gateway", target:200, get: () => (profile.stats.catCorrect?.["Default Gateway"] || 0) }
+  { id:"cat_default_gateway_200", title:"Default Gateway ×200", desc:"ענה נכון על 200 שאלות ב-Default Gateway.", kind:"Cat Default Gateway", target:200, get: () => (profile.stats.catCorrect?.["Default Gateway"] || 0) },
+  { id:"cat_vlan_25", title:"VLAN ×25", desc:"ענה נכון על 25 שאלות ב-VLAN.", kind:"Cat VLAN", target:25, get: () => (profile.stats.catCorrect?.["VLAN"] || 0) },
+  { id:"cat_vlan_50", title:"VLAN ×50", desc:"ענה נכון על 50 שאלות ב-VLAN.", kind:"Cat VLAN", target:50, get: () => (profile.stats.catCorrect?.["VLAN"] || 0) },
+  { id:"cat_vlan_100", title:"VLAN ×100", desc:"ענה נכון על 100 שאלות ב-VLAN.", kind:"Cat VLAN", target:100, get: () => (profile.stats.catCorrect?.["VLAN"] || 0) },
+  { id:"cat_vlan_200", title:"VLAN ×200", desc:"ענה נכון על 200 שאלות ב-VLAN.", kind:"Cat VLAN", target:200, get: () => (profile.stats.catCorrect?.["VLAN"] || 0) },
+
+  
+
 ];
 
 function isAchUnlocked(id){ return !!profile.unlocked[id]; }
