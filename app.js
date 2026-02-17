@@ -5344,8 +5344,42 @@ function addXP(amount, reason, anchorEl){
     }
     toast("xp", "עלית רמה! 🎉", `רמה ${profile.level} — ממשיכים לשבור שיאים.`);
   } else if(reason){
-    toast("xp", "XP", reason, 1600);
+    toast("xp","XP", `קיבלת ${amount} XP — ${reason}`, 1700);
   }
+}
+
+
+// ==============================
+// 🎇 Particles burst around an element (for clicks)
+// ==============================
+function burstFx(anchorEl, variant="good"){
+  try{
+    const rect = anchorEl.getBoundingClientRect();
+    const cx = rect.left + rect.width/2;
+    const cy = rect.top + rect.height/2;
+
+    const box = document.createElement("div");
+    box.className = "burstFx " + (variant || "good");
+    box.style.left = cx + "px";
+    box.style.top  = cy + "px";
+
+    const count = 14;
+    for(let i=0;i<count;i++){
+      const p = document.createElement("span");
+      const ang = (Math.PI*2) * (i / count) + (Math.random()*0.35);
+      const dist = 38 + Math.random()*26;
+      const dx = Math.cos(ang) * dist;
+      const dy = Math.sin(ang) * dist;
+      p.style.setProperty("--dx", dx.toFixed(1) + "px");
+      p.style.setProperty("--dy", dy.toFixed(1) + "px");
+      p.style.setProperty("--d", (0.55 + Math.random()*0.2).toFixed(2) + "s");
+      box.appendChild(p);
+    }
+
+    document.body.appendChild(box);
+    requestAnimationFrame(() => box.classList.add("go"));
+    setTimeout(() => box.remove(), 900);
+  }catch(e){}
 }
 
 /* stable key per question (so best times persist across games) */
@@ -6274,7 +6308,7 @@ function loadQuestion(){
     btn.className = "answerBtn";
     btn.type = "button";
     btn.innerHTML = `<span>${escapeHtml(text)}</span><span class="badge">${String.fromCharCode(0x05D0 + i)}</span>`; // א ב ג ד
-    btn.addEventListener("click", () => onPick(i));
+    btn.addEventListener("click", () => onPick(i, btn));
     answersEl.appendChild(btn);
   });
 
@@ -6352,12 +6386,21 @@ function showFeedback(isCorrect, timeUp=false){
 }
 
 
-function onPick(i){
+function onPick(i, pickedBtn){
   if(state.locked) return;
   const q = state.deck[state.idx];
   const isCorrect = (i === q.c);
+
+  // 🎆 Click FX (button pulse + particles)
+  if(pickedBtn){
+    pickedBtn.classList.add("tap");
+    if(!isCorrect) pickedBtn.classList.add("shake");
+    burstFx(pickedBtn, isCorrect ? "good" : "bad");
+    setTimeout(() => pickedBtn.classList.remove("tap","shake"), 520);
+  }
   const elapsedMs = Math.max(0, performance.now() - qStartMs);
   if(state.mode === "test") stopTimer();
+  stopRunTimer(); // ✅ עוצר את ה-runTime מיד בלחיצה
 
   lockAnswers(true);
   revealCorrectAnswer(i);
@@ -6383,7 +6426,12 @@ profile.stats.catsPlayed[q.cat] = true;
     const xpBase = 28 + (q.diff === "easy" ? 0 : (q.diff === "medium" ? 10 : 18));
     const speedBonus = clamp((state.timerSec*1000 - elapsedMs) / (state.timerSec*1000), 0, 1);
     const xpGain = Math.round(xpBase + speedBonus * 18 + clamp(state.combo,0,10) * 2);
-    addXP(xpGain, "נכון ✅", scoreEl);
+
+// ✅ FX על הכפתור עצמו עם כמות ה-XP
+popFx(`+${xpGain} XP`, "xp", pickedBtn || scoreEl);
+
+addXP(xpGain, "נכון ✅", scoreEl);
+
     commitBestTimeIfNeeded(q, elapsedMs, true);
     checkAchievements();
 
@@ -6396,6 +6444,7 @@ profile.stats.catsPlayed[q.cat] = true;
         profile.stats.totalAnswered += 1;
 profile.stats.catsPlayed[q.cat] = true;
     saveProfile();
+    popFx(`+6 XP`, "xp", pickedBtn || scoreEl);
     addXP(6, "ניסיון גם שווה XP 🙂", scoreEl);
     checkAchievements();
 
