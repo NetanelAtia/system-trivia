@@ -6456,7 +6456,7 @@ profile.stats.catsPlayed[q.cat] = true;
 // ✅ FX על הכפתור עצמו עם כמות ה-XP
 popFx(`+${xpGain} XP`, "xp", pickedBtn || scoreEl);
 
-addXP(xpGain, "נכון ✅", scoreEl);
+addXP(xpGain, "נכון ✅", document.querySelector(".levelStat"));
 
     commitBestTimeIfNeeded(q, elapsedMs, true);
     checkAchievements();
