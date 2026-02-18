@@ -5192,6 +5192,7 @@ function loadProfile(){
     if(typeof p.xp !== "number") p.xp = 0;
     p.bestTimes = p.bestTimes || {};
     p.unlocked = p.unlocked || {};
+    p.newUnlock = p.newUnlock || {};
     p.stats = p.stats || {};
     p.stats.games = Number(p.stats.games || 0);
     p.stats.totalCorrect = Number(p.stats.totalCorrect || 0);
@@ -5232,7 +5233,9 @@ function loadProfile(){
       level: 0,
       xp: 0,
       bestTimes: {},        // { [qKey]: ms }
-      unlocked: {},         // { [achId]: true }
+      unlocked: {},
+      newUnlock: {},      // { [achId]: true } (NEW badges)
+         // { [achId]: true }
       stats: {
         games: 0,
         totalCorrect: 0,
@@ -5288,6 +5291,26 @@ function updateLevelUI(){
   }
   if(xpTotalEl){
       xpTotalEl.textContent = `XP מצטבר: ${(profile.stats.totalXP || 0).toLocaleString()}`;
+  }
+
+  // HOME header mini XP (optional)
+  const levelHomeEl = document.getElementById("levelHome");
+  const xpNowHomeEl = document.getElementById("xpNowHome");
+  const xpNeedHomeEl = document.getElementById("xpNeedHome");
+  const xpFillHomeEl = document.getElementById("xpFillHome");
+  const xpRemainHomeEl = document.getElementById("xpRemainHome");
+  const xpTotalHomeEl = document.getElementById("xpTotalHome");
+
+  if(levelHomeEl) levelHomeEl.textContent = String(profile.level);
+  if(xpNowHomeEl) xpNowHomeEl.textContent = String(profile.xp);
+  if(xpNeedHomeEl) xpNeedHomeEl.textContent = String(need);
+  if(xpFillHomeEl) xpFillHomeEl.style.width = `${Math.round(pct * 100)}%`;
+  if(xpRemainHomeEl){
+    const rem = Math.max(0, need - profile.xp);
+    xpRemainHomeEl.textContent = `Remaining: ${rem.toLocaleString()} XP`;
+  }
+  if(xpTotalHomeEl){
+    xpTotalHomeEl.textContent = `XP מצטבר: ${(profile.stats.totalXP || 0).toLocaleString()}`;
   }
 }
 function toast(kind, title, body, ms=2600){
@@ -5763,6 +5786,8 @@ function computeAchProgress(ach){
 function unlockAch(id){
   if(isAchUnlocked(id)) return;
   profile.unlocked[id] = true;
+  profile.newUnlock = profile.newUnlock || {};
+  profile.newUnlock[id] = true;
   saveProfile();
   const ach = ACH.find(a => a.id === id);
   if(ach){
@@ -5847,6 +5872,7 @@ return `<span dir="ltr">${pretty(shown)} / ${pretty(t)}</span>`;
 
     return `
       <div class="achCard ${unlocked ? "unlocked" : "locked"}">
+        ${ (unlocked && profile.newUnlock && profile.newUnlock[a.id]) ? `<div class="achNew">NEW UNLOCK</div>` : `` }
         <div class="achTop">
           <div class="achTitle">${a.title ?? ""}</div>
           <div class="achKind">${a.kind ?? ""}</div>
@@ -5926,7 +5952,7 @@ renderAchievements();
 checkAchievements();
 
 
-const FEEDBACK_AUTO_NEXT_MS = 10000; // 10 seconds
+const FEEDBACK_AUTO_NEXT_MS = 10500; // 10 seconds
 function clamp(n, a, b){ return Math.max(a, Math.min(b, n)); }
 
 function normalizeName(s){
@@ -6520,6 +6546,13 @@ profile.stats.bestCombo = Math.max(profile.stats.bestCombo, state.combo);
 
 function renderAnalysis(){
   analysisList.innerHTML = "";
+
+  // count label
+  const c = (state.mistakes || []).length;
+  const tEl = document.getElementById("analysisTitle");
+  if(tEl) tEl.textContent = `🔎 ניתוח טעויות${c ? ` (${c})` : ""}`;
+  if(btnOpenAnalysis) btnOpenAnalysis.textContent = c ? `פתח פירוט (${c} טעויות)` : `פתח פירוט`;
+
   if(state.mistakes.length === 0){
     analysisList.innerHTML = `<div class="mistake"><div class="mistakeQ">אין טעויות 🎯</div><div class="mistakeBody">מטורף. זה כבר רמה של סיסטם אמיתי.</div></div>`;
     return;
@@ -6667,7 +6700,21 @@ btnPlayAgain.addEventListener("click", () => goto(screenHome));
 btnBackHome.addEventListener("click", () => goto(screenHome));
 
 btnHow.addEventListener("click", () => dlgHow.showModal());
-btnAch.addEventListener("click", () => { renderAchievements(); dlgAch.showModal(); });
+btnAch.addEventListener("click", () => {
+  renderAchievements();
+  dlgAch.showModal();
+});
+
+// When user closes achievements modal: clear NEW badges
+if(dlgAch){
+  dlgAch.addEventListener("close", () => {
+    if(profile.newUnlock && Object.keys(profile.newUnlock).length){
+      profile.newUnlock = {};
+      saveProfile();
+      renderAchievements();
+    }
+  });
+}
 
 btnHighscores.addEventListener("click", () => { renderHighscores(); dlgScores.showModal(); });
 btnShowHighscores2.addEventListener("click", () => { renderHighscores(); dlgScores.showModal(); });

@@ -31,14 +31,28 @@
       <div class="brandText">
         <div class="title">System Trivia</div>
         <div class="subtitle">טריוויה מקצועית על AD • GPO • DHCP • DNS • RAID • ועוד</div>
-      </div>
-    </div>
-
-    <div class="topActions">
+      
+        <div class="homeXpMini" aria-label="XP">
+          <div class="homeXpTop">
+            <div class="homeXpLevel">רמה <span id="levelHome">0</span></div>
+            <div class="homeXpText"><span id="xpNowHome">0</span>/<span id="xpNeedHome">200</span> XP</div>
+          </div>
+          <div class="homeXpBar"><div class="homeXpFill" id="xpFillHome" style="width:0%"></div></div>
+          <div class="homeXpMeta">
+            <div id="xpRemainHome">Remaining: 0 XP</div>
+            <div id="xpTotalHome">XP מצטבר: 0</div>
+          </div>
+        </div>
+         <div class="topActions">
       <button id="btnTheme" class="btn ghost" type="button" title="מצב תצוגה">🌓</button>
       <button id="btnAch" class="btn ghost" type="button" title="השגים">🏆</button>
       <button id="btnHow" class="btn ghost" type="button" title="איך משחקים?">❔</button>
     </div>
+</div>
+    </div>
+
+
+
   </header>
 
   <main class="container">
@@ -283,7 +297,7 @@
     <dialog id="dlgAnalysis" class="modal">
       <form method="dialog" class="modalBody">
         <div class="modalHeader">
-          <div class="modalTitle">🔎 ניתוח טעויות</div>
+          <div class="modalTitle" id="analysisTitle">🔎 ניתוח טעויות</div>
           <button class="btn ghost" value="close" aria-label="סגור">✕</button>
         </div>
 
