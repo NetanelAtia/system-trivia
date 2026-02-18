@@ -5338,7 +5338,7 @@ function popFx(text, kind, anchorEl){
   el.style.left = `${x}px`;
   el.style.top = `${y}px`;
 
-  setTimeout(() => el.remove(), 950);
+  setTimeout(() => el.remove(), 5450);
 }
 function addXP(amount, reason, anchorEl){
   amount = Math.max(0, Math.round(amount));

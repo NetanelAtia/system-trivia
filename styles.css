@@ -1119,7 +1119,7 @@ body{
   box-shadow: 0 20px 60px rgba(0,0,0,0.30);
   font-weight: 950;
   letter-spacing: .2px;
-  animation: popFloat 900ms ease forwards;
+  animation: popFloat 2450ms ease forwards;
 }
 .popFx.good{ color: rgba(52,211,153,0.95); }
 .popFx.bad{ color: rgba(251,113,133,0.95); }
