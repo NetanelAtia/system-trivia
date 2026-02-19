@@ -6583,48 +6583,70 @@ function renderAnalysis(){
   });
 }
 
-function loadHighscores(){
+function loadHighscoresLocalOnly(){
   try{
     const raw = localStorage.getItem(SCORE_KEY);
     if(!raw) return [];
     const arr = JSON.parse(raw);
-    if(!Array.isArray(arr)) return [];
-    return arr;
+    return Array.isArray(arr) ? arr : [];
   } catch { return []; }
 }
 
-function saveHighscore(entry){
-  const list = loadHighscores();
-  list.push(entry);
-  list.sort((a,b) => b.score - a.score);
-  localStorage.setItem(SCORE_KEY, JSON.stringify(list.slice(0, 10)));
+async function loadHighscores(){
+  try{
+    if(window.cloudScores){
+      return await window.cloudScores.top(10);
+    }
+    return loadHighscoresLocalOnly();
+  } catch {
+    return loadHighscoresLocalOnly();
+  }
+}
+
+async function saveHighscore(entry){
+  try{
+    if(window.cloudScores){
+      await window.cloudScores.add(entry);
+      return;
+    }
+
+    const list = loadHighscoresLocalOnly();
+    list.push(entry);
+    list.sort((a,b) => b.score - a.score);
+    localStorage.setItem(SCORE_KEY, JSON.stringify(list.slice(0, 10)));
+
+  } catch(e){}
 }
 
 function renderHighscores(){
-  const list = loadHighscores();
-  scoresBody.innerHTML = "";
+  (async () => {
+    const list = await loadHighscores();
+    scoresBody.innerHTML = "";
 
-  if(list.length === 0){
-    const tr = document.createElement("tr");
-    tr.innerHTML = `<td colspan="5" style="color:var(--muted);">אין עדיין שיאים. תן בראש 😄</td>`;
-    scoresBody.appendChild(tr);
-    return;
-  }
+    if(list.length === 0){
+      const tr = document.createElement("tr");
+      tr.innerHTML = `<td colspan="5" style="color:var(--muted);">אין עדיין שיאים 😄</td>`;
+      scoresBody.appendChild(tr);
+      return;
+    }
 
-  list.forEach((e, idx) => {
-    const d = new Date(e.ts);
-    const dateStr = d.toLocaleDateString("he-IL");
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td>${idx+1}</td>
-      <td>${escapeHtml(e.name || "Player")}</td>
-      <td>${e.score}</td>
-      <td>${e.acc}%</td>
-      <td>${dateStr}</td>
-    `;
-    scoresBody.appendChild(tr);
-  });
+    list.forEach((e, idx) => {
+      const d = new Date(e.ts);
+      const dateStr = d.toLocaleDateString("he-IL");
+
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${idx+1}</td>
+        <td>${escapeHtml(e.name || "Player")}</td>
+        <td>${e.score}</td>
+        <td>${e.acc}%</td>
+        <td>${dateStr}</td>
+      `;
+      scoresBody.appendChild(tr);
+    });
+  })();
 }
+
 
 function escapeHtml(s){
   return String(s).replace(/[&<>"']/g, (m) => ({

@@ -341,6 +341,45 @@
 
       </form>
     </dialog>
+    <script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+  import {
+    getFirestore, collection, addDoc, query, orderBy, limit, getDocs, serverTimestamp
+  } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBOZHj2Zu_wiGuTorJh87aYBvxdWOXPzA",
+    authDomain: "system-trivia.firebaseapp.com",
+    projectId: "system-trivia",
+    storageBucket: "system-trivia.firebasestorage.app",
+    messagingSenderId: "131571107840",
+    appId: "1:131571107840:web:ba443e4eb71795cdd570e5"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  window.cloudScores = {
+    async add(entry){
+      await addDoc(collection(db, "scores"), {
+        ...entry,
+        score: Number(entry.score || 0),
+        acc: Number(entry.acc || 0),
+        ts: serverTimestamp()
+      });
+    },
+    async top(n = 10){
+      const qy = query(collection(db, "scores"), orderBy("score", "desc"), limit(n));
+      const snap = await getDocs(qy);
+      return snap.docs.map(d => {
+        const data = d.data();
+        const ms = data.ts?.toMillis ? data.ts.toMillis() : Date.now();
+        return { ...data, ts: ms };
+      });
+    }
+  };
+</script>
+
 <script src="app.js" defer></script>
 </body>
 </html>
