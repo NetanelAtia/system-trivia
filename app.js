@@ -6229,24 +6229,158 @@ function buildAudiencePoll(q){
 
 function buildPhoneSuggestion(q){
   const letters = ["א","ב","ג","ד"];
-  const confidence = ({ easy: 0.80, medium: 0.68, hard: 0.55 }[q.diff] ?? 0.65);
 
+  // רנדום יציב יותר
+  const rnd = () => {
+    try{
+      const u = new Uint32Array(1);
+      crypto.getRandomValues(u);
+      return u[0] / 4294967296;
+    }catch(e){
+      return Math.random();
+    }
+  };
+  const pickOne = (arr) => arr[Math.floor(rnd() * arr.length)];
+  const clamp01 = (x) => Math.max(0, Math.min(1, x));
+
+  // --- "ריאליזם": לחץ זמן משפיע על סגנון הדיבור, לא על אחוזי צדק (אתה ביקשת 80/20 קבוע) ---
+  const timerSec = Number(state.timerSec || 30);
+  const timeLeft = Number(state.timeLeft || 0);
+  const timePressure = clamp01(1 - (timeLeft / Math.max(1, timerSec))); // 0 רגוע, 1 לחץ
+
+  // קובע אם הוא "די בטוח" (לא קובע אם הוא צודק)
+  // יותר קל -> יותר סיכוי בטוח, יותר קשה + לחץ -> פחות
+  const baseConf = ({ easy: 0.70, medium: 0.50, hard: 0.32 }[q.diff] ?? 0.50);
+  const confChance = clamp01(baseConf - timePressure*0.18 + (Number(state.combo||0) * 0.01));
+  const confident = rnd() < confChance;
+
+  // אחוז צדק לפי הביטחון (כמו שביקשת)
+  const correctChance = confident ? 0.80 : 0.20;
+  const isCorrect = rnd() < correctChance;
+
+  // בחירת תשובה
   let pick = q.c;
-  if(Math.random() > confidence){
-    const opts = [0,1,2,3].filter(i => i !== q.c);
-    pick = opts[Math.floor(Math.random()*opts.length)];
+  if(!isCorrect){
+    const wrong = [0,1,2,3].filter(i => i !== q.c);
+    // טעות "סבירה" לעיתים: בחר תשובה סמוכה (מרגיש טבעי)
+    const near = [q.c-1, q.c+1].filter(i => i>=0 && i<=3);
+    pick = (near.length && rnd() < 0.55) ? pickOne(near.filter(i=>i!==q.c)) : pickOne(wrong);
   }
 
-  const answerText = escapeHtml(q.a[pick] || "");
-  const exp = (q.exp || "").split(/[\n]/)[0].trim();
-  const rationale = exp ? escapeHtml(exp) : "זה נשמע לי הכי הגיוני לפי העקרונות שלמדנו.";
+  // לפעמים מציג 2 אופציות (יותר כשלא בטוח / או בלחץ)
+  const showTwoChance = clamp01((confident ? 0.25 : 0.55) + timePressure*0.18);
+  const showTwo = rnd() < showTwoChance;
 
-  return `
-    <div><b>אני חושב שהתשובה היא:</b> <span style="font-weight:950;">${letters[pick]}</span></div>
+  let alt = null;
+  if(showTwo){
+    const pool = [0,1,2,3].filter(i => i !== pick);
+    // כשהוא לא בטוח, הרבה פעמים "לערבב" את הנכונה כדי להרגיש שיש על מה להתלבט
+    if(!confident && pick !== q.c && rnd() < 0.65) alt = q.c;
+    else alt = pickOne(pool);
+  }
+
+  // טקסטים ריאליים
+  const openConf = [
+    "שומע, אני די בטוח בזה.",
+    "אוקיי, זה מוכר לי ממש.",
+    "כן… זה נשמע לי ברור.",
+    "אני כמעט בטוח שזה זה."
+  ];
+  const openUnsure = [
+    "וואלה אני לא סגור…",
+    "רגע… זה אחד מהדברים המבלבלים.",
+    "אני מתלבט, לא רוצה להטעות אותך.",
+    "אוף, זה על קצה הלשון…"
+  ];
+
+  const pressureLines = [
+    "מהר לפני שהטיימר גומר אותך 😅",
+    "אין לי הרבה זמן לחשוב, זרום איתי רגע.",
+    "יש לחץ זמן, אז אני הולך על תחושה."
+  ];
+
+  const askLines = [
+    "מה הקטגוריה/נושא? זה יכול לעזור לי לזכור.",
+    "זה קל/בינוני/קשה? כי זה משנה את הראש.",
+    "תזכיר לי — זה יותר Networking או AD כזה?"
+  ];
+
+  const confidenceLine = confident
+    ? pickOne(["לך על:", "תסמן:", "אני אומר:", "מבחינתי זה:"])
+    : pickOne(["אני נוטה ל:", "אם אני חייב לבחור אז:", "הימור שלי:", "נראה לי שזה:"]);
+
+  // נימוק: אם צודק אפשר להשתמש ב-exp (אם יש), אם לא — נימוק כללי שלא מספיילר
+  const exp = (q.exp || "").split(/\n/)[0].trim();
+  const goodWhy = exp
+    ? escapeHtml(exp)
+    : pickOne([
+        "זה מסתדר עם ההגדרה הקלאסית של המושג.",
+        "זה הכי הגיוני לפי איך שזה עובד בפועל.",
+        "זה נשען על העיקרון הבסיסי של הנושא."
+      ]);
+
+  const badWhy = pickOne([
+    "אני נשען על זיכרון… יכול להיות שאני מפספס.",
+    "זה מרגיש נכון לי, אבל זה לא 100%.",
+    "יש מצב שאני מערבב בין שני מושגים דומים."
+  ]);
+
+  // לפעמים "שינוי דעה קטן" (רק בטקסט)
+  const flipChance = clamp01((confident ? 0.08 : 0.18) + timePressure*0.08);
+  const doesFlip = showTwo && alt != null && (rnd() < flipChance);
+
+  // בניית הודעה
+  const opener = confident ? pickOne(openConf) : pickOne(openUnsure);
+
+  const extraBits = [];
+  if(rnd() < 0.22) extraBits.push(pickOne(askLines));
+  if(timePressure > 0.62 && rnd() < 0.55) extraBits.push(pickOne(pressureLines));
+
+  const answerText = escapeHtml(q.a[pick] || "");
+  const altText = (alt==null) ? "" : escapeHtml(q.a[alt] || "");
+
+  let html = `
+    <div style="opacity:.92; margin-bottom:6px;">${escapeHtml(opener)}</div>
+    ${extraBits.length ? `<div style="opacity:.78; margin-bottom:8px;">${escapeHtml(pickOne(extraBits))}</div>` : ""}
+
+    <div><b>${escapeHtml(confidenceLine)}</b> <span style="font-weight:950;">${letters[pick]}</span></div>
     <div style="margin-top:6px; opacity:.95;">${answerText}</div>
-    <div style="margin-top:10px; opacity:.9;"><b>למה:</b> ${rationale}</div>
-    <div style="margin-top:8px; opacity:.75; font-size:14px;">(זה חבר טלפוני, לא CTO 😄)</div>
   `;
+
+  if(showTwo && alt != null){
+    const twoHeader = confident
+      ? pickOne(["אבל אם אתה רוצה גיבוי:", "אופציה שנייה רק ליתר ביטחון:", "אם אתה מתעקש על עוד אפשרות:"])
+      : pickOne(["אני מתלבט בין:", "יש לי שתי אופציות בראש:", "אני בין זה לבין:"]);
+
+    html += `
+      <div style="margin-top:10px; opacity:.9;">
+        <b>${escapeHtml(twoHeader)}</b>
+        <div style="margin-top:6px;">
+          <span style="font-weight:900;">${letters[alt]}</span> (${altText})
+        </div>
+      </div>
+    `;
+
+    if(doesFlip){
+      html += `
+        <div style="margin-top:8px; opacity:.85;">
+          רגע… אם אני חושב שוב — אני אולי יותר לכיוון <b>${letters[pick]}</b>. פשוט תדע שיש סיכוי.
+        </div>
+      `;
+    }
+  }
+
+  html += `
+    <div style="margin-top:10px; opacity:.9;"><b>למה:</b> ${isCorrect ? goodWhy : badWhy}</div>
+    <div style="margin-top:8px; opacity:.75; font-size:14px;">
+      ${escapeHtml(confident
+        ? pickOne(["(אני די בטוח בזה)", "(זה מוכר לי חזק)", "(לדעתי זה נקי)"])
+        : pickOne(["(אל תתפוס אותי במילה)", "(יכול להיות שאני טועה)", "(זה הימור מחושב 😄)"])
+      )}
+    </div>
+  `;
+
+  return html;
 }
 
 function useAudience(){
